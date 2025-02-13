@@ -26,3 +26,7 @@ val brightBlue = Color(0xFF027cf5)
 
 
 val Blur = Color(0xFF8D7857).copy(alpha = 0.5f)
+
+
+val GreyLight = Color(0xFFB5B6BA)
+val GreyDark = Color(0xFF60626C)

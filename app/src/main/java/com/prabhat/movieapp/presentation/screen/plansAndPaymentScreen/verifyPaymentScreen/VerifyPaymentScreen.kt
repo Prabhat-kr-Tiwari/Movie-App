@@ -46,15 +46,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.prabhat.movieapp.navigation.ProfileDestination
 import com.prabhat.movieapp.utils.LoadingAnimation
 import kotlinx.coroutines.delay
 
 @Composable
 fun VerifyPaymentScreen(
     modifier: Modifier = Modifier,
+    navHostController: NavHostController,
+
     systemUiController: SystemUiController,
     statusBarColor: Color
 ) {
@@ -271,6 +275,12 @@ fun VerifyPaymentScreen(
         ) {
 
             var isClicked by remember { mutableStateOf(false) } // State to track button click
+            if (isClicked){
+                LaunchedEffect(Unit) {
+
+                    navHostController.navigate(ProfileDestination.ChooseAvatarScreen)
+                }
+            }
 //        AnimatedRow()
             Box(
                 modifier = Modifier
@@ -349,6 +359,7 @@ fun VerifyPaymentScreenPreview() {
     // Preview of your screen with a placeholder statusBarColor
     VerifyPaymentScreen(
         modifier = Modifier,
+        navHostController = navController,
         systemUiController = systemUiController,
         statusBarColor = Color.Blue // or any other color
     )

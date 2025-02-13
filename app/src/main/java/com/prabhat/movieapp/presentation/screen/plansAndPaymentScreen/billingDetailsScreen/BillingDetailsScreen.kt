@@ -73,7 +73,8 @@ fun BillingDetailsScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing)
 
             .fillMaxSize()
-            .background(Color.Black), verticalArrangement = Arrangement.SpaceEvenly,
+            .background(Color.Black),
+        verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 

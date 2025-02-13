@@ -3,9 +3,16 @@ package com.prabhat.movieapp.data.di
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.room.Room
 import com.prabhat.movieapp.data.appSettings.AppSettings
 import com.prabhat.movieapp.data.appSettings.AppSettingsSerializer
+import com.prabhat.movieapp.data.local.upcomingMovie.MovieDatabase
+import com.prabhat.movieapp.data.local.upcomingMovie.UpComingMovieEntity
 import com.prabhat.movieapp.data.network.MovieApiService
+import com.prabhat.movieapp.data.network.movie.UpComingMovieRemoteMediator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,6 +52,31 @@ object DataModule {
     @Singleton
     fun provideDataStore(@ApplicationContext context: Context):DataStore<AppSettings> {
         return context.dataStore
+    }
+    @Provides
+    @Singleton
+    fun provideRetrofitForMovieService(retrofit: Retrofit): com.prabhat.movieapp.data.network.movie.MovieApiService {
+        return retrofit.create(com.prabhat.movieapp.data.network.movie.MovieApiService::class.java)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideMovieDatabase(@ApplicationContext context: Context): MovieDatabase {
+        return Room.databaseBuilder(context, MovieDatabase::class.java, "movie.db").build()
+
+    }
+
+    @OptIn(ExperimentalPagingApi::class)
+    @Provides
+    @Singleton
+    fun provideUpComingMoviePager(movieDatabase: MovieDatabase, movieApiService: com.prabhat.movieapp.data.network.movie.MovieApiService)
+            : Pager<Int, UpComingMovieEntity> {
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            remoteMediator = UpComingMovieRemoteMediator(movieDatabase=movieDatabase, movieApiService = movieApiService),
+            pagingSourceFactory = { movieDatabase.upcomingMovieDao.pagingSource() }
+        )
     }
 }
 

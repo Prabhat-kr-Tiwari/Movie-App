@@ -15,7 +15,7 @@ val apikeyProperties =  Properties()
 apikeyProperties.load( FileInputStream(apikeyPropertiesFile))*/
 android {
     namespace = "com.prabhat.movieapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.prabhat.movieapp"
@@ -126,6 +126,7 @@ dependencies {
 
     // MARK: - Hilt (dagger/hilt)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.media3.common.ktx)
     debugImplementation(libs.androidx.ui.tooling)
     kapt(libs.hilt.compiler)
     kapt(libs.hilt.android.compiler)
@@ -147,6 +148,35 @@ dependencies {
     //data store
     implementation(libs.androidx.datastore)
     implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.androidx.constraintlayout.compose)
+
+
+    // Paging
+    implementation (libs.androidx.paging.runtime.ktx)
+    implementation (libs.androidx.paging.compose)
+
+    // Room
+    implementation (libs.androidx.room.ktx)
+    kapt (libs.androidx.room.compiler)
+    implementation (libs.androidx.room.paging)
+
+    //icon
+    implementation(libs.androidx.material.icons.extended.android)
+
+    //youtube video
+    implementation(libs.chromecast.sender)
+
+    implementation (libs.exoplayer)
+    implementation (libs.landscapist.glide)
+
+    implementation (libs.androidx.media3.exoplayer)
+    implementation (libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.exoplayer.hls)
+
+
+
+
+
 
 
 
