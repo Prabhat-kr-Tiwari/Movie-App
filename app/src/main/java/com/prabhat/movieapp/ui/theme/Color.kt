@@ -1,6 +1,7 @@
 package com.prabhat.movieapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.core.graphics.toColorInt
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
@@ -30,3 +31,35 @@ val Blur = Color(0xFF8D7857).copy(alpha = 0.5f)
 
 val GreyLight = Color(0xFFB5B6BA)
 val GreyDark = Color(0xFF60626C)
+
+
+var red = Color(0xFFED1B24)
+
+
+// define your colors for dark theme
+val clear_dark = Color(0xFFA05162)
+val dark_btn = Color(0xFF222427)
+
+// define your colors for dark theme
+val light_btn = Color("#E9F0F4".toColorInt())
+val light_bg = Color("#F6F8F9".toColorInt())
+val clear_light = Color(0xFFF1C8D1)
+sealed class ThemeColors(
+    val bacground: Color,
+    val surafce: Color,
+    val primary: Color,
+    val text: Color
+)  {
+    object Night: ThemeColors(
+        bacground = Color.Black,
+        surafce = dark_btn,
+        primary = clear_dark,
+        text = Color.White
+    )
+    object Day: ThemeColors(
+        bacground = light_bg,
+        surafce = light_btn,
+        primary = clear_light,
+        text = Color.Black
+    )
+}

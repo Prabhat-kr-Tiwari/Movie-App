@@ -22,6 +22,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,6 +47,7 @@ import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.prabhat.movieapp.R
 import com.prabhat.movieapp.navigation.BottomNavigationDestination
+import com.prabhat.movieapp.ui.theme.MovieAppTheme
 
 @Composable
 fun ProfileCompleteScreen(
@@ -54,188 +57,213 @@ fun ProfileCompleteScreen(
     statusBarColor: Color
 ) {
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .windowInsetsPadding(WindowInsets.safeDrawing)
+    Scaffold(
+        modifier = modifier
 
-            .background(Color.Black),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-
-        Spacer(modifier = Modifier.height(10.dp))
-
+            .background(MaterialTheme.colorScheme.surface)
+    ) { innerPadding ->
         Column(
-            modifier = Modifier,
+            modifier = Modifier.padding(innerPadding)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+
+                .background(MaterialTheme.colorScheme.surface),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 10.dp)
-                    .clip(RoundedCornerShape(40.dp))
-                    .height(200.dp)
-                    .background(Color.Red),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "MOVIES",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 80.sp,
-                    textAlign = TextAlign.Center
-                )
-            }
-            Text(
-                text = "Your Profile is Created\n        Successfully!!",
-                fontWeight = FontWeight.Bold,
-                fontSize = 22.sp,
-                color = Color.White
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-
-
-
-            Box(
-                modifier = Modifier
-
-                    .align(Alignment.CenterHorizontally)
-                    .clip(CircleShape)
-            ) {
-
-                Image(
-                    painter = painterResource(id = R.drawable.property_1_frame_5),
-                    contentDescription = "Profile Image",
-                    modifier = Modifier
-                        .size(180.dp)
-                )
-
-                Image(
-                    painter = painterResource(id = R.drawable.ellipse13),
-                    contentDescription = "Profile Image",
-                    modifier = Modifier
-                        .size(160.dp).align(Alignment.Center)
-                )
-
-            }
-
-
-            Spacer(modifier = Modifier.height(40.dp))
-
-
 
             Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = "UIUXDIVYANSHU",
-                color = Color.White,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
 
-
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            var isIAmSafeAllNowClicked by remember {
-                mutableStateOf(false)
-            }
-            LaunchedEffect(isIAmSafeAllNowClicked) {
-                if (isIAmSafeAllNowClicked) {
-                    navHostController.navigate(BottomNavigationDestination.MovieHomeScreen)
-                }
-            }
-
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 30.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
-                contentAlignment = Alignment.BottomCenter
+            Column(
+                modifier = Modifier,
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
+
+                Box(
                     modifier = Modifier
-                        .align(Alignment.Center)
                         .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                        .clip(RoundedCornerShape(40.dp))
+                        .height(200.dp)
+                        .background(Color.Red),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "MOVIES",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 80.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                Text(
+                    text = "Your Profile is Created\n        Successfully!!",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+
+
+                Box(
+                    modifier = Modifier
+
+                        .align(Alignment.CenterHorizontally)
+                        .clip(CircleShape)
                 ) {
 
-                    Button(
-                        onClick = {
-                            isIAmSafeAllNowClicked =
-                                !isIAmSafeAllNowClicked // Toggle the clicked state
-
-                        },
-                        shape = RoundedCornerShape(20.dp),
-                        border = BorderStroke(
-                            1.dp,
-                            if (isIAmSafeAllNowClicked) Color.Transparent else Color.Red
-                        ),
+                    Image(
+                        painter = painterResource(id = R.drawable.property_1_frame_5),
+                        contentDescription = "Profile Image",
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isIAmSafeAllNowClicked) Color.Red else Color.Black,
-                            disabledContainerColor = if (isIAmSafeAllNowClicked) Color.Red else Color.Black,
-                            contentColor = Color.White,
-                            disabledContentColor = if (isIAmSafeAllNowClicked) Color.Black else Color.White
-                        ),
-                        elevation = ButtonDefaults.elevatedButtonElevation(
-                            defaultElevation = 20.dp,
-                            pressedElevation = 30.dp,
-                            focusedElevation = 30.dp,
-                            hoveredElevation = 30.dp,
-                            disabledElevation = 0.dp
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalArrangement = Arrangement.SpaceAround,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                            .size(180.dp)
+                    )
 
-                            Text(
-                                text = "Eat Your Green Vegetables",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp, textAlign = TextAlign.Start
+                    Image(
+                        painter = painterResource(id = R.drawable.ellipse13),
+                        contentDescription = "Profile Image",
+                        modifier = Modifier
+                            .size(160.dp).align(Alignment.Center)
+                    )
+
+                }
+
+
+                Spacer(modifier = Modifier.height(40.dp))
+
+
+
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = "UIUXDIVYANSHU",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                var isIAmSafeAllNowClicked by remember {
+                    mutableStateOf(false)
+                }
+                LaunchedEffect(isIAmSafeAllNowClicked) {
+                    if (isIAmSafeAllNowClicked) {
+                        navHostController.navigate(BottomNavigationDestination.MovieHomeScreen)
+                    }
+                }
+
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 30.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .fillMaxWidth()
+                    ) {
+
+                        Button(
+                            onClick = {
+                                isIAmSafeAllNowClicked =
+                                    !isIAmSafeAllNowClicked // Toggle the clicked state
+
+                            },
+                            shape = RoundedCornerShape(20.dp),
+                            border = BorderStroke(
+                                1.dp,
+                                if (isIAmSafeAllNowClicked) Color.Transparent else Color.Red
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isIAmSafeAllNowClicked) Color.Red else MaterialTheme.colorScheme.surface,
+                                disabledContainerColor = if (isIAmSafeAllNowClicked) Color.Red else Color.Black,
+                                contentColor = Color.White,
+                                disabledContentColor = if (isIAmSafeAllNowClicked) Color.Black else Color.White
+                            ),
+                            elevation = ButtonDefaults.elevatedButtonElevation(
+                                defaultElevation = 20.dp,
+                                pressedElevation = 30.dp,
+                                focusedElevation = 30.dp,
+                                hoveredElevation = 30.dp,
+                                disabledElevation = 0.dp
                             )
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                Text(
+                                    text = "Eat Your Green Vegetables",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp, textAlign = TextAlign.Start,
+                                    color = MaterialTheme.colorScheme.onBackground
+
+                                )
+
+                            }
 
                         }
 
+
                     }
-
-
                 }
             }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
+        }
     }
 
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@ThemeAnnotation
 @Composable
 fun PreviewProfileCompleteScreen(modifier: Modifier = Modifier) {
 
     // Mock NavHostController for the preview
     val navController = rememberNavController()
 
-    // Mock SystemUiController (You might need to provide a proper implementation or mock)
-    val systemUiController = rememberSystemUiController()
-    ProfileCompleteScreen(
-        navHostController = navController,
-        systemUiController = systemUiController,
-        statusBarColor = Color.Red
-    )
+    MovieAppTheme {
+        // Mock SystemUiController (You might need to provide a proper implementation or mock)
+        val systemUiController = rememberSystemUiController()
+        ProfileCompleteScreen(
+            navHostController = navController,
+            systemUiController = systemUiController,
+            statusBarColor = Color.Red
+        )
+    }
+
 }
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+
+
+)
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO
+
+)
+annotation class ThemeAnnotation

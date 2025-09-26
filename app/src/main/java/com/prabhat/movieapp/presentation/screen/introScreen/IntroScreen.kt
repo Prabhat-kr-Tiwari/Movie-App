@@ -1,7 +1,6 @@
 package com.prabhat.movieapp.presentation.screen.introScreen
 
 
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -46,13 +45,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.prabhat.movieapp.R
+import com.prabhat.movieapp.data.repository.AuthenticationRepositoryImpl
+import com.prabhat.movieapp.domain.repository.AuthenticationRepository
+import com.prabhat.movieapp.domain.use_case.AuthenticationUseCase
 import com.prabhat.movieapp.navigation.Destination
 import com.prabhat.movieapp.navigation.PlansAndPaymentDestination
+import com.prabhat.movieapp.presentation.screen.more.accountScreen.ThemeAnnotation
+import com.prabhat.movieapp.ui.theme.MovieAppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
@@ -305,6 +311,40 @@ fun IntroScreen(
     }
 
 }
+
+//@ThemeAnnotation
+//@Composable
+//fun previewIntroScreen(modifier: Modifier = Modifier) {
+//
+//
+//    val navHostController = rememberNavController()
+//    val authenticationRepository = AuthenticationRepositoryImpl()
+//    val authenticationUseCase = AuthenticationUseCase(authenticationRepository)
+//    val introScreenViewModel = IntroScreenViewModel(authenticationUseCase)
+//    MovieAppTheme {
+//        IntroScreen(
+//            modifier = Modifier,
+//            navHostController = navHostController,
+//            introScreenViewModel = introScreenViewModel,
+//
+//        )
+//    }
+//}
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+
+
+)
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO
+
+)
+annotation class ThemeAnnotation
 
 
 

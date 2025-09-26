@@ -127,6 +127,7 @@ dependencies {
     // MARK: - Hilt (dagger/hilt)
     implementation(libs.hilt.android)
     implementation(libs.androidx.media3.common.ktx)
+    implementation(libs.androidx.palette.ktx)
     debugImplementation(libs.androidx.ui.tooling)
     kapt(libs.hilt.compiler)
     kapt(libs.hilt.android.compiler)

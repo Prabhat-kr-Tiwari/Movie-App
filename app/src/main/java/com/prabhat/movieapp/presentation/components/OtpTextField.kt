@@ -14,9 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 import com.prabhat.movieapp.ui.theme.GreyDark
@@ -43,7 +45,7 @@ fun OtpTextField(
                 onOtpTextChange.invoke(it.text, it.text.length == otpCount)
             }
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword, imeAction = ImeAction.Done),
         decorationBox = {
             Row(horizontalArrangement = Arrangement.Center) {
                 repeat(otpCount) { index ->
@@ -71,7 +73,8 @@ private fun CharView(
     }
     Text(
         modifier = Modifier
-            .width(40.dp)
+            .width(60.dp)
+            .height(60.dp)
             .border(
                 1.dp, when {
                     isFocused -> GreyDark

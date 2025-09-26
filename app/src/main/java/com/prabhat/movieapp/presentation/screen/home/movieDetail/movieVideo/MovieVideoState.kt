@@ -6,6 +6,6 @@ import com.prabhat.movieapp.domain.model.upcomingMovie.upcomingMovieVideo.Upcomi
 data class MovieVideoState(
     val isLoading: Boolean = false,
     val data: UpcomingMovieVideo? =null,
-    val error: String = ""
+    val error: String? = null
 )
 

@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.prabhat.movieapp.presentation.screen.categories.MovieCategoriesScreen
+import com.prabhat.movieapp.presentation.screen.downloads.DownloadScreenViewModel
 import com.prabhat.movieapp.presentation.screen.downloads.MovieDownloadScreen
 import com.prabhat.movieapp.presentation.screen.home.MovieHomeScreen
 import com.prabhat.movieapp.presentation.screen.home.MovieScreenViewModel
@@ -23,6 +24,11 @@ import com.prabhat.movieapp.presentation.screen.home.movieDetail.MovieDetailScre
 import com.prabhat.movieapp.presentation.screen.introScreen.IntroScreen
 import com.prabhat.movieapp.presentation.screen.loginScreen.LoginScreen
 import com.prabhat.movieapp.presentation.screen.more.MoreScreen
+import com.prabhat.movieapp.presentation.screen.more.accountScreen.accountScreenRoot
+import com.prabhat.movieapp.presentation.screen.more.accountScreen.navigateToAccountScreen
+import com.prabhat.movieapp.presentation.screen.more.moreScreen
+import com.prabhat.movieapp.presentation.screen.more.settingsScreen.navigateToSettingScreen
+import com.prabhat.movieapp.presentation.screen.more.settingsScreen.settingScreenRoot
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.billingDetailsScreen.BillingDetailsScreen
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.choosePaymentModeScreen.ChoosePaymentModeScreen
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.ChooseYourPlanScreen
@@ -74,9 +80,11 @@ fun PerformNavigation(
     systemUiController: SystemUiController,
     statusBarColor: Color,
     innerPadding: PaddingValues,
-    movieScreenViewModel: MovieScreenViewModel = hiltViewModel()
+//    movieScreenViewModel: MovieScreenViewModel = hiltViewModel()
 ) {
 
+    val movieScreenViewModel :MovieScreenViewModel = hiltViewModel()
+    val downloadScreenViewModel : DownloadScreenViewModel = hiltViewModel()
 
 //    val navController = rememberNavController()
 
@@ -212,18 +220,19 @@ fun PerformNavigation(
             }
             composable<BottomNavigationDestination.MovieCategoriesScreen> {
 
-                MovieCategoriesScreen()
+                MovieCategoriesScreen(movieScreenViewModel = movieScreenViewModel,navHostController = navHostController)
 
             }
             composable<BottomNavigationDestination.MovieDownloadScreen> {
-                MovieDownloadScreen()
+                MovieDownloadScreen(downloadScreenViewModel = downloadScreenViewModel)
 
 
             }
             composable<BottomNavigationDestination.MoreScreen> {
 
-                MoreScreen()
+                MoreScreen(onOpenAccount = {navHostController.navigateToAccountScreen() }, onOpenSettings = {navHostController.navigateToSettingScreen()}, innerPaddingValues = innerPadding)
             }
+//            moreScreen(onOpenAccount = {navHostController.navigateToAccountScreen() }, onOpenSettings = {navHostController.navigateToSettingScreen()})
             /* composable<BottomNavigationDestination.MovieDetailScreen>(typeMap = mapOf(
                  typeOf<UpComingMovieResponse>() to CustomNavType<UpComingMovieResponse>(
                      UpComingMovieResponse::class,
@@ -241,6 +250,14 @@ fun PerformNavigation(
 
 
              }*/
+
+            accountScreenRoot(
+                innerPaddingValues = innerPadding,
+                onNavigateUp = {
+                    navHostController.navigateUp()
+                }
+            )
+            settingScreenRoot(innerPaddingValues = innerPadding, onNavigateUp =  { navHostController.navigateUp() })
         }
         /*navigation<SubGraph.MovieDetailsScreen>(startDestination = HomeDestination.MovieHomeScreen){
 
@@ -273,12 +290,20 @@ fun PerformNavigation(
                     systemUiController = systemUiController,
                     statusBarColor = statusBarColor,
                     innerPadding = innerPadding,
-                    movieScreenViewModel = movieScreenViewModel
+                    movieScreenViewModel = movieScreenViewModel,
+                            navHostController = navHostController
                 )
 
 
             }
         }
+       /* navigation<SubGraph.MoreAndSetting>(startDestination = BottomNavigationDestination.MoreScreen.route) {
+            accountScreenRoot { navHostController.navigateUp() }
+            settingScreenRoot { navHostController.navigateUp() }
+        }*/
+
+
+
 
 
     }

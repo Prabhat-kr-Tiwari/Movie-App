@@ -131,6 +131,12 @@ sealed class DownloadDestination {
 sealed class MoreDestination {
     @Serializable
     data object MoreScreen : MoreDestination()
+
+    @Serializable
+    data object AccountScreen: MoreDestination()
+
+    @Serializable
+    data object SettingScreen: MoreDestination()
 }
 
 @Serializable

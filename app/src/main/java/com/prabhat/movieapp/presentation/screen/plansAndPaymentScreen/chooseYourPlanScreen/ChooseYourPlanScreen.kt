@@ -3,7 +3,6 @@ package com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYou
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +21,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,6 +45,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.prabhat.movieapp.navigation.PlansAndPaymentDestination
+import com.prabhat.movieapp.ui.theme.MovieAppTheme
 
 
 @Composable
@@ -54,410 +56,478 @@ fun ChooseYourPlanScreen(
     statusBarColor: Color
 ) {
 
-    systemUiController.setStatusBarColor(color = statusBarColor)
-    Column(
-        modifier = Modifier
-            .windowInsetsPadding(WindowInsets.safeDrawing)
-            .fillMaxSize()
-            .background(Color.Black), verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Scaffold(
+        modifier = modifier
 
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp, bottom = 20.dp, start = 40.dp, end = 40.dp)
-                .background(Color.Black),
-            horizontalArrangement = Arrangement.Absolute.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(end = 5.dp)
-
-                    .clip(CircleShape)
-                    .background(Color.Red)
-                    .size(24.dp), contentAlignment = Alignment.Center
-            ) {
-
-                Text(
-                    text = "1",
-                    textAlign = TextAlign.Center,
-                    color = Color.White,
-                    fontSize = 12.sp
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .clip(RectangleShape)
-                    .width(50.dp)
-                    .background(Color.Red.copy(alpha = 0.5f))
-                    .height(4.dp)
-            )
-
-            Box(
-                modifier = Modifier
-
-                    .padding(start = 5.dp, end = 5.dp)
-                    .clip(CircleShape)
-                    .background(Color.Red.copy(alpha = 0.5f))
-
-                    .size(24.dp), contentAlignment = Alignment.Center
-            ) {
-
-                Text(
-                    text = "2",
-                    textAlign = TextAlign.Center,
-                    color = Color.White,
-                    fontSize = 12.sp
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .clip(RectangleShape)
-                    .width(50.dp)
-                    .background(Color.Red.copy(alpha = 0.5f))
-                    .height(4.dp)
-                    .padding(start = 15.dp, end = 15.dp, top = 15.dp)
-            )
-
-
-            Box(
-                modifier = Modifier
-
-                    .padding(start = 5.dp)
-                    .clip(CircleShape)
-                    .background(Color.Red.copy(alpha = 0.5f))
-                    .size(24.dp), contentAlignment = Alignment.Center
-            ) {
-
-                Text(
-                    text = "3",
-                    textAlign = TextAlign.Center,
-                    color = Color.White,
-                    fontSize = 12.sp
-                )
-            }
-        }
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(color = Color.White)
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 50.dp, vertical = 10.dp)
-                .clip(RoundedCornerShape(40.dp))
-                .height(120.dp)
-                .background(Color.Red),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "MOVIES",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 70.sp,
-                textAlign = TextAlign.Center
-            )
-        }
-        Text(
-            text = "Choose your Plan",
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            fontSize = 22.sp
-        )
-        Text(
-            text = "Cancel at any time",
-            color = Color.Gray,
-            textAlign = TextAlign.Center,
-            fontSize = 14.sp
-        )
-
-        var isClicked by remember { mutableStateOf(false) } // State to track button click
-
+            .background(MaterialTheme.colorScheme.surface)
+    ) { innerPadding ->
+        systemUiController.setStatusBarColor(color = statusBarColor)
         Column(
-            verticalArrangement = Arrangement.SpaceEvenly,
+            modifier = modifier
+                .padding(innerPadding)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface),
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp, bottom = 20.dp, start = 40.dp, end = 40.dp)
+                    .background(MaterialTheme.colorScheme.surface),
+                horizontalArrangement = Arrangement.Absolute.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(end = 5.dp)
+
+                        .clip(CircleShape)
+                        .background(Color.Red)
+                        .size(24.dp), contentAlignment = Alignment.Center
+                ) {
+
+                    Text(
+                        text = "1",
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 12.sp
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .clip(RectangleShape)
+                        .width(50.dp)
+                        .background(Color.Red.copy(alpha = 0.5f))
+                        .height(4.dp)
+                )
+
+                Box(
+                    modifier = Modifier
+
+                        .padding(start = 5.dp, end = 5.dp)
+                        .clip(CircleShape)
+                        .background(Color.Red.copy(alpha = 0.5f))
+
+                        .size(24.dp), contentAlignment = Alignment.Center
+                ) {
+
+                    Text(
+                        text = "2",
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 12.sp
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .clip(RectangleShape)
+                        .width(50.dp)
+                        .background(Color.Red.copy(alpha = 0.5f))
+                        .height(4.dp)
+                        .padding(start = 15.dp, end = 15.dp, top = 15.dp)
+                )
+
+
+                Box(
+                    modifier = Modifier
+
+                        .padding(start = 5.dp)
+                        .clip(CircleShape)
+                        .background(Color.Red.copy(alpha = 0.5f))
+                        .size(24.dp), contentAlignment = Alignment.Center
+                ) {
+
+                    Text(
+                        text = "3",
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(color = MaterialTheme.colorScheme.surface)
+            )
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 30.dp, start = 20.dp, end = 20.dp)
+                    .padding(horizontal = 50.dp, vertical = 10.dp)
+                    .clip(RoundedCornerShape(40.dp))
+                    .height(120.dp)
+                    .background(Color.Red),
+                contentAlignment = Alignment.Center
             ) {
-                Column(
+                Text(
+                    text = "MOVIES",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 70.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+            Text(
+                text = "Choose your Plan",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                fontSize = 22.sp
+            )
+            Text(
+                text = "Cancel at any time",
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center,
+                fontSize = 14.sp
+            )
+
+            var isClicked by remember { mutableStateOf(false) } // State to track button click
+            var isMovieClicked by remember { mutableStateOf(false) } // State to track button click
+            var isSeriesClicked by remember { mutableStateOf(false) } // State to track button click
+
+            Column(
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally
+                , modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+            ) {
+
+                Box(
                     modifier = Modifier
-                        .align(Alignment.Center)
                         .fillMaxWidth()
+                        .padding(top = 30.dp, start = 20.dp, end = 20.dp)
                 ) {
-
-                    Button(
-                        onClick = {
-                            isClicked = !isClicked // Toggle the clicked state
-
-                        },
-                        shape = RoundedCornerShape(20.dp),
-                        border = BorderStroke(1.dp, if (isClicked) Color.Transparent else Color.Red),
+                    Column(
                         modifier = Modifier
+                            .align(Alignment.Center)
                             .fillMaxWidth()
-                            .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isClicked) Color.Red else Color.Black,
-                            disabledContainerColor = if (isClicked) Color.Red else Color.Black,
-                            contentColor = Color.White,
-                            disabledContentColor = if (isClicked) Color.Black else Color.White
-                        ),
-                        elevation = ButtonDefaults.elevatedButtonElevation(
-                            defaultElevation = 20.dp,
-                            pressedElevation = 30.dp,
-                            focusedElevation = 30.dp,
-                            hoveredElevation = 30.dp,
-                            disabledElevation = 0.dp
-                        )
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
 
-                            Text(
-                                text = "Movies & Series",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp, textAlign = TextAlign.Start
+                        Button(
+                            onClick = {
+                                isClicked = !isClicked // Toggle the clicked state
+
+                            },
+                            shape = RoundedCornerShape(20.dp),
+                            border = BorderStroke(
+                                1.dp,
+                                if (isClicked) Color.Transparent else Color.Red
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isClicked) Color.Red else MaterialTheme.colorScheme.surface,
+                                disabledContainerColor = if (isClicked) Color.Red else Color.Black,
+                                contentColor =Color.White,
+                                disabledContentColor = if (isClicked) Color.Black else Color.White
+                            ),
+                            elevation = ButtonDefaults.elevatedButtonElevation(
+                                defaultElevation = 20.dp,
+                                pressedElevation = 30.dp,
+                                focusedElevation = 30.dp,
+                                hoveredElevation = 30.dp,
+                                disabledElevation = 0.dp
                             )
-                            Text(
-                                text = "$20/month",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp, textAlign = TextAlign.End
-                            )
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxSize()
+
+                                ,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                Text(
+                                    text = "Movies & Series",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp, textAlign = TextAlign.Start,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                Text(
+                                    text = "$20/month",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
+                                    textAlign = TextAlign.End,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+
                         }
 
+
                     }
-
-
                 }
-            }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 30.dp, start = 20.dp, end = 20.dp)
-            ) {
-                Column(
+                Box(
                     modifier = Modifier
-                        .align(Alignment.Center)
                         .fillMaxWidth()
+                        .padding(top = 30.dp, start = 20.dp, end = 20.dp)
                 ) {
-
-                    Button(
-                        onClick = {
-                            isClicked = !isClicked // Toggle the clicked state
-
-                        },
-                        shape = RoundedCornerShape(20.dp),
-                        border = BorderStroke(1.dp, if (isClicked) Color.Transparent else Color.Red),
+                    Column(
                         modifier = Modifier
+                            .align(Alignment.Center)
                             .fillMaxWidth()
-                            .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isClicked) Color.Red else Color.Black,
-                            disabledContainerColor = if (isClicked) Color.Red else Color.Black,
-                            contentColor = Color.White,
-                            disabledContentColor = if (isClicked) Color.Black else Color.White
-                        ),
-                        elevation = ButtonDefaults.elevatedButtonElevation(
-                            defaultElevation = 20.dp,
-                            pressedElevation = 30.dp,
-                            focusedElevation = 30.dp,
-                            hoveredElevation = 30.dp,
-                            disabledElevation = 0.dp
-                        )
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
 
-                            Text(
-                                text = "Movies",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp, textAlign = TextAlign.Start
+                        Button(
+                            onClick = {
+                                isMovieClicked = !isMovieClicked // Toggle the clicked state
+
+                            },
+                            shape = RoundedCornerShape(20.dp),
+                            border = BorderStroke(
+                                1.dp,
+                                if (isMovieClicked) Color.Transparent else Color.Red
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isMovieClicked) Color.Red else MaterialTheme.colorScheme.surface,
+                                disabledContainerColor = if (isMovieClicked) Color.Red else Color.Black,
+                                contentColor = Color.White,
+                                disabledContentColor = if (isMovieClicked) Color.Black else Color.White
+                            ),
+                            elevation = ButtonDefaults.elevatedButtonElevation(
+                                defaultElevation = 20.dp,
+                                pressedElevation = 30.dp,
+                                focusedElevation = 30.dp,
+                                hoveredElevation = 30.dp,
+                                disabledElevation = 0.dp
                             )
-                            Text(
-                                text = "$15/month",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp, textAlign = TextAlign.End
-                            )
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                Text(
+                                    text = "Movies",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
+                                    textAlign = TextAlign.Start,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                Text(
+                                    text = "$15/month",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp, textAlign = TextAlign.End,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+
                         }
 
+
                     }
-
-
                 }
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 30.dp, start = 20.dp, end = 20.dp)
-            ) {
-                Column(
+                Box(
                     modifier = Modifier
-                        .align(Alignment.Center)
                         .fillMaxWidth()
+                        .padding(top = 30.dp, start = 20.dp, end = 20.dp)
                 ) {
-
-                    Button(
-                        onClick = {
-                            isClicked = !isClicked // Toggle the clicked state
-
-                        },
-                        shape = RoundedCornerShape(20.dp),
-                        border = BorderStroke(1.dp, if (isClicked) Color.Transparent else Color.Red),
+                    Column(
                         modifier = Modifier
+                            .align(Alignment.Center)
                             .fillMaxWidth()
-                            .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isClicked) Color.Red else Color.Black,
-                            disabledContainerColor = if (isClicked) Color.Red else Color.Black,
-                            contentColor = Color.White,
-                            disabledContentColor = if (isClicked) Color.Black else Color.White
-                        ),
-                        elevation = ButtonDefaults.elevatedButtonElevation(
-                            defaultElevation = 20.dp,
-                            pressedElevation = 30.dp,
-                            focusedElevation = 30.dp,
-                            hoveredElevation = 30.dp,
-                            disabledElevation = 0.dp
-                        )
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
 
-                            Text(
-                                text = "Series",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp, textAlign = TextAlign.Start
+                        Button(
+                            onClick = {
+                                isSeriesClicked = !isSeriesClicked // Toggle the clicked state
+
+                            },
+                            shape = RoundedCornerShape(20.dp),
+                            border = BorderStroke(
+                                1.dp,
+                                if (isSeriesClicked) Color.Transparent else Color.Red
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isSeriesClicked) Color.Red else MaterialTheme.colorScheme.surface,
+                                disabledContainerColor = if (isSeriesClicked) Color.Red else Color.Black,
+                                contentColor = Color.White,
+                                disabledContentColor = if (isSeriesClicked) Color.Black else Color.White
+                            ),
+                            elevation = ButtonDefaults.elevatedButtonElevation(
+                                defaultElevation = 20.dp,
+                                pressedElevation = 30.dp,
+                                focusedElevation = 30.dp,
+                                hoveredElevation = 30.dp,
+                                disabledElevation = 0.dp
                             )
-                            Text(
-                                text = "$15/month",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp, textAlign = TextAlign.End
-                            )
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                Text(
+                                    text = "Series",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
+                                    textAlign = TextAlign.Start,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                Text(
+                                    text = "$15/month",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp, textAlign = TextAlign.End,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+
                         }
 
+
+
                     }
-
-                    Spacer(modifier = Modifier.height(12.dp)) // Add space between the button and text
-
                 }
+
+
+                //adding continue button
+
+                var isContinueClicked by remember { mutableStateOf(false) } // State to track button click
+
+                Log.d("PRABHAT1", "ChooseYourPlanScreen: $isContinueClicked")
+                LaunchedEffect(isContinueClicked) {
+                    Log.d("PRABHAT LaunchedEffect", "ChooseYourPlanScreen: ")
+                    if (isContinueClicked) {
+                        Log.d("PRABHAT isContinueClicked", "ChooseYourPlanScreen: ")
+                        navHostController.navigate(PlansAndPaymentDestination.ChooseYourPaymentModeScreen)
+                    }
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+                Box(
+                    modifier = Modifier
+
+                        .fillMaxWidth()
+                        .padding(top = 130.dp, start = 20.dp, end = 20.dp, bottom = 10.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+
+                            .align(Alignment.Center)
+                            .fillMaxWidth()
+
+                    ) {
+
+                        Button(
+                            onClick = {
+                                isContinueClicked = !isContinueClicked // Toggle the clicked state
+
+                            },
+                            shape = RoundedCornerShape(20.dp),
+                            border = BorderStroke(
+                                1.dp,
+                                if (isContinueClicked) Color.Transparent else Color.Red
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isContinueClicked) Color.Red else MaterialTheme.colorScheme.background,
+                                disabledContainerColor = if (isContinueClicked) Color.Red else Color.Black,
+                                contentColor = Color.White,
+                                disabledContentColor = if (isContinueClicked) Color.Black else Color.White
+                            ),
+                            elevation = ButtonDefaults.elevatedButtonElevation(
+                                defaultElevation = 20.dp,
+                                pressedElevation = 30.dp,
+                                focusedElevation = 30.dp,
+                                hoveredElevation = 30.dp,
+                                disabledElevation = 0.dp
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier
+
+                                    .fillMaxSize()
+                                ,
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                Text(
+                                    text = "Continue",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp, textAlign = TextAlign.Start,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+
+                            }
+
+                        }
+
+                        Spacer(
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.surface)
+                                .height(12.dp)
+
+                        ) // Add space between the button and text
+
+                    }
+                }
+
+
             }
+
+
+
+
 
         }
-
-
-        Column(modifier = Modifier.fillMaxSize().background(Color.Black),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom) {
-
-            var isContinueClicked by remember { mutableStateOf(false) } // State to track button click
-
-            Log.d("PRABHAT1", "ChooseYourPlanScreen: $isContinueClicked")
-            LaunchedEffect(isContinueClicked) {
-                Log.d("PRABHAT LaunchedEffect", "ChooseYourPlanScreen: ")
-                if (isContinueClicked) {
-                    Log.d("PRABHAT isContinueClicked", "ChooseYourPlanScreen: ")
-                    navHostController.navigate(PlansAndPaymentDestination.ChooseYourPaymentModeScreen)
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 30.dp, start = 20.dp, end = 20.dp, bottom = 10.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .fillMaxWidth()
-                ) {
-
-                    Button(
-                        onClick = {
-                            isContinueClicked = !isContinueClicked // Toggle the clicked state
-
-                        },
-                        shape = RoundedCornerShape(20.dp),
-                        border = BorderStroke(
-                            1.dp,
-                            if (isContinueClicked) Color.Transparent else Color.Red
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isContinueClicked) Color.Red else Color.Black,
-                            disabledContainerColor = if (isContinueClicked) Color.Red else Color.Black,
-                            contentColor = Color.White,
-                            disabledContentColor = if (isContinueClicked) Color.Black else Color.White
-                        ),
-                        elevation = ButtonDefaults.elevatedButtonElevation(
-                            defaultElevation = 20.dp,
-                            pressedElevation = 30.dp,
-                            focusedElevation = 30.dp,
-                            hoveredElevation = 30.dp,
-                            disabledElevation = 0.dp
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalArrangement = Arrangement.SpaceAround,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                            Text(
-                                text = "Continue",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp, textAlign = TextAlign.Start
-                            )
-
-                        }
-
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp)) // Add space between the button and text
-
-                }
-            }
-        }
-
-
     }
+
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@ThemeAnnotation
 @Composable
 fun ChooseYourPlanScreenPreview() {
+
     // Mock NavHostController for the preview
     val navController = rememberNavController()
 
     // Mock SystemUiController (You might need to provide a proper implementation or mock)
     val systemUiController = rememberSystemUiController()
+    MovieAppTheme {
+// Preview of your screen with a placeholder statusBarColor
+        ChooseYourPlanScreen(
+            modifier = Modifier,
+            navHostController = navController,
+            systemUiController = systemUiController,
+            statusBarColor = Color.Blue // or any other color
+        )
+    }
 
-    // Preview of your screen with a placeholder statusBarColor
-    ChooseYourPlanScreen(
-        modifier = Modifier,
-        navHostController = navController,
-        systemUiController = systemUiController,
-        statusBarColor = Color.Blue // or any other color
-    )
+
 }
+
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+
+
+)
+@Preview(
+    name = "Light Mode",
+    showBackground = true,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_NO
+
+)
+annotation class ThemeAnnotation

@@ -8,8 +8,6 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.prabhat.movieapp.data.local.upcomingMovie.MovieDatabase
 import com.prabhat.movieapp.data.local.upcomingMovie.UpComingMovieEntity
-import com.prabhat.movieapp.data.mappers.toUpComingMovieEntity
-import com.prabhat.movieapp.data.mappers.toUpComingMovieResponse
 import com.prabhat.movieapp.utils.Constants.BASE_IMAGE_URL
 import kotlinx.coroutines.delay
 import retrofit2.HttpException

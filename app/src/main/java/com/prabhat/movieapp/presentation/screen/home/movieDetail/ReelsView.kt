@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.prabhat.movieapp.component.CustomYoutubePlayer
+import com.prabhat.movieapp.domain.model.popular.popularSeriesVideo.popularSeriesVideo
 import com.prabhat.movieapp.domain.model.upcomingMovie.upcomingMovieVideo.UpcomingMovieVideo
 import com.prabhat.movieapp.presentation.screen.home.movieDetail.movieCredits.DummyData
 import com.prabhat.movieapp.presentation.screen.home.movieDetail.movieCredits.Reel
@@ -38,9 +39,15 @@ val verticalPadding = 12.dp
 val horizontalPadding = 10.dp
 
 @Composable
-fun ReelsView(upcomingMovieVideo: UpcomingMovieVideo) {
+fun ReelsView(upcomingMovieVideo: UpcomingMovieVideo?,popularSeriesVideo: popularSeriesVideo?) {
     Box(Modifier.background(color = Color.Black)) {
-        ReelsList(upcomingMovieVideo.key)
+        if (upcomingMovieVideo != null) {
+            ReelsList(upcomingMovieVideo.key)
+        }
+        if (popularSeriesVideo!=null){
+            ReelsList(popularSeriesVideo.key)
+
+        }
 
 //        ReelsHeader()
     }

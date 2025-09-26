@@ -24,17 +24,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -49,6 +54,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.prabhat.movieapp.navigation.BottomNavigationDestination
 import com.prabhat.movieapp.navigation.PerformNavigation
+import com.prabhat.movieapp.presentation.screen.home.MovieScreenViewModel
 import com.prabhat.movieapp.presentation.screen.splashScreen.SplashScreenViewModel
 import com.prabhat.movieapp.ui.theme.Blur
 import com.prabhat.movieapp.ui.theme.MovieAppTheme
@@ -60,6 +66,9 @@ class MainActivity : ComponentActivity() {
 
 
     private val splashScreenViewModel by viewModels<SplashScreenViewModel>()
+    private val myViewModel: MovieScreenViewModel by viewModels()
+    var currentDestinationName:String? = null
+
     private var shouldDisplayBottomBar = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,7 +113,8 @@ class MainActivity : ComponentActivity() {
                         "QWERTY",
                         "onCreate: ${BottomNavigationDestination.MovieHomeScreen.toString()}"
                     )
-                    val currentDestinationName = currentDestination?.substringAfterLast(".")
+//                    val currentDestinationName = currentDestination?.substringAfterLast(".")
+                     currentDestinationName = currentDestination?.substringAfterLast(".")
 
                     shouldDisplayBottomBar = when (currentDestinationName) {
                         BottomNavigationDestination.MovieHomeScreen.toString(),
@@ -144,19 +154,43 @@ class MainActivity : ComponentActivity() {
 
                     val systemUi = rememberSystemUiController()
 
-                    statusBarColor = if (isSystemInDarkTheme()) Color.Black else Color.Black
+//                    statusBarColor = if (isSystemInDarkTheme()) Color.Black else Color.White
+                    statusBarColor = MaterialTheme.colorScheme.surface
                     systemUi.setStatusBarColor(statusBarColor)
                     val h = innerPadding
 //                   IntroScreen(modifier = Modifier.padding(innerPadding))
-                    PerformNavigation(
-                        navHostController = navController,
-                        systemUiController = systemUi,
-                        statusBarColor = statusBarColor,
-                        innerPadding= innerPadding
-                    )
+                    val localActivity = staticCompositionLocalOf<ComponentActivity> {
+                        error("LocalActivity is not present")
+                    }
+                    CompositionLocalProvider(localActivity provides this@MainActivity) {
+                        Log.e("ActivityScopedViewModel", "Hashcode: ${myViewModel.hashCode()} : Activity Scope")
+
+                        PerformNavigation(
+                            navHostController = navController,
+                            systemUiController = systemUi,
+                            statusBarColor = statusBarColor,
+                            innerPadding= innerPadding
+                        )
+                    }
+
+                }
+                val backStack = remember { mutableStateListOf<String>() }
+
+                LaunchedEffect(navController) {
+                    navController.currentBackStackEntryFlow.collect { backStackEntry ->
+                        backStackEntry.destination.route?.let { route ->
+                            if (backStack.isEmpty() || backStack.last() != route) {
+                                backStack.add(route)
+                            }
+                            Log.d("CHUBBY", "Full BackStack: $backStack")
+                        }
+                    }
                 }
             }
+
         }
+
+
     }
 
     override fun getOnBackInvokedDispatcher(): OnBackInvokedDispatcher {
@@ -228,20 +262,30 @@ fun MyBottomNavigation(
         // Back press handling to go to the previous tab
 //        val context= LocalContext.current.getActivity()
         val local = context.getActivity()
-        BackHandler {
-            if (selectedItemIndex > 0) {
-                Log.d("PRABHAT", "Navigating to previous tab")
-                selectedItemIndex -= 1
-                navController.navigate(bottomItemList[selectedItemIndex].currentScreen)
-            } else {
-                Log.d("PRABHAT", "Back pressed, closing the activity")
+        val currentDestination = navController.currentDestination?.route
+        val currentDestinationName = currentDestination?.substringAfterLast(".")
+        Log.d("TOMM", "MyBottomNavigation: main "+currentDestinationName)
+
+
+            BackHandler(enabled = true) {
+
+                if (selectedItemIndex > 0) {
+                    Log.d("PRABHAT", "Navigating to previous tab")
+                    selectedItemIndex -= 1
+                    navController.navigate(bottomItemList[selectedItemIndex].currentScreen)
+                } else {
+                    Log.d("PRABHAT", "Back pressed, closing the activity")
 //                onBackPressedDispatcher.onBackPressed()
 
 //                context?.finish()
-                local?.finish()
-                // This will close the activity if at the first tab
+                    local?.finish()
+                    // This will close the activity if at the first tab
+                }
             }
-        }
+
+
+
+
 
 
         /*  BackHandler(enabled = selectedItemIndex > 0) {

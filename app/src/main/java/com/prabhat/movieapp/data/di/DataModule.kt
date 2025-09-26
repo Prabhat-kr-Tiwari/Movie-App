@@ -11,8 +11,11 @@ import com.prabhat.movieapp.data.appSettings.AppSettings
 import com.prabhat.movieapp.data.appSettings.AppSettingsSerializer
 import com.prabhat.movieapp.data.local.upcomingMovie.MovieDatabase
 import com.prabhat.movieapp.data.local.upcomingMovie.UpComingMovieEntity
+import com.prabhat.movieapp.data.local.watchList.WatchlistDao
 import com.prabhat.movieapp.data.network.MovieApiService
 import com.prabhat.movieapp.data.network.movie.UpComingMovieRemoteMediator
+import com.prabhat.movieapp.mappers.popularSeries.PopularSeriesDTOToPopularSeriesMapper
+import com.prabhat.movieapp.mappers.trending.TrendingOfWeekResponseDtoToTrendingOfWeekMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -63,7 +66,9 @@ object DataModule {
     @Provides
     @Singleton
     fun provideMovieDatabase(@ApplicationContext context: Context): MovieDatabase {
-        return Room.databaseBuilder(context, MovieDatabase::class.java, "movie.db").build()
+        return Room.databaseBuilder(context, MovieDatabase::class.java, "movie.db")
+            .fallbackToDestructiveMigration()
+            .build()
 
     }
 
@@ -77,6 +82,24 @@ object DataModule {
             remoteMediator = UpComingMovieRemoteMediator(movieDatabase=movieDatabase, movieApiService = movieApiService),
             pagingSourceFactory = { movieDatabase.upcomingMovieDao.pagingSource() }
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideTrendingOfWeekMapper(): TrendingOfWeekResponseDtoToTrendingOfWeekMapper {
+        return TrendingOfWeekResponseDtoToTrendingOfWeekMapper()
+    }
+
+    @Provides
+    @Singleton
+    fun providePopularSeriesMapper(): PopularSeriesDTOToPopularSeriesMapper {
+        return PopularSeriesDTOToPopularSeriesMapper()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWatchListDao(movieDatabase: MovieDatabase): WatchlistDao{
+        return movieDatabase.watchlistDao
     }
 }
 
