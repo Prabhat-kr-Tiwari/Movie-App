@@ -1,12 +1,71 @@
-![first](https://github.com/user-attachments/assets/1a647e0f-30a7-45a3-a8cd-4cfa4b8e78e1)
-![second](https://github.com/user-attachments/assets/c5ed4ed8-f4da-4d51-92b6-57efb601d952)
-![ver](https://github.com/user-attachments/assets/f737e411-9019-4ffe-b9d0-696411e12056)
-![profile](https://github.com/user-attachments/assets/4eb5d535-97aa-4d8a-bd76-3f03a40cc18b)
-![1](https://github.com/user-attachments/assets/b8ab0723-27bd-4e32-9ea5-c06211527980)
-![2](https://github.com/user-attachments/assets/f6db5356-fdb0-4cca-a56f-14763fbf8222)
-![3](https://github.com/user-attachments/assets/446588f5-f225-4251-89d7-9e6b3e21e5c8)
-![4](https://github.com/user-attachments/assets/65dacef9-648a-4597-bf28-2adf784b39ba)
-![5](https://github.com/user-attachments/assets/14c49e33-95b9-4256-a3e5-abdea812f427)
-![6](https://github.com/user-attachments/assets/64d7c9dc-9b48-4ef2-b0dd-a842a62cfbb3)
-![detail](https://github.com/user-attachments/assets/9ad45cce-6181-409e-8984-faae960423de)
-![video](https://github.com/user-attachments/assets/a2568540-a23c-4de9-96ba-428c67deb55e)
+🎬 Movie App
+
+A modern Android application built using Jetpack Compose and TMDB API to browse trending, popular, and upcoming movies. The app follows Clean Architecture, utilizes Hilt for dependency injection, and is powered by Coroutines + Flow for reactive data handling. It also includes a YouTube trailer viewer and supports Dark & Light themes.
+
+🚀 Features
+🎥 Movies
+
+Fetch trending, popular, and top-rated movies
+
+Movie details including overview, ratings, genres and release date
+
+Search movies in real time
+
+Included YouTube video player for watching trailers
+
+🎨 UI / UX
+
+Fully built with Jetpack Compose
+
+Dynamic theming — Light & Dark modes
+
+Responsive UI for multiple screen sizes
+
+🧱 Architecture
+
+Clean Architecture (Domain, Data, Presentation layers)
+
+MVVM pattern
+
+Repository pattern
+
+Proper separation of concerns
+
+⚙️ Tech Stack
+
+Kotlin
+
+Jetpack Compose
+
+Coroutines & Flow
+
+Hilt (Dependency Injection)
+
+Retrofit for API calls
+
+YouTube Android Player API
+
+TMDB API
+
+Material 3 Components
+
+🛠️ Project Setup
+
+Clone the repository
+
+git clone (https://github.com/Prabhat-kr-Tiwari/Movie-App)
+
+
+Get a TMDB API key from:
+https://www.themoviedb.org/
+
+Add your TMDB API key to local.properties:
+
+TMDB_API_KEY=your_api_key
+
+
+Build and run the project in Android Studio Flamingo+
+
+📸 Screenshots 
+
+<img width="14912" height="6319" alt="Frame 3 (1) (1)" src="https://github.com/user-attachments/assets/144b1f46-68c9-4551-9203-d193750b0cbe" />
