@@ -1,8 +1,8 @@
-🎬 Movie App
+# **🎬 Movie App**
 
 A modern Android application built using Jetpack Compose and TMDB API to browse trending, popular, and upcoming movies. The app follows Clean Architecture, utilizes Hilt for dependency injection, and is powered by Coroutines + Flow for reactive data handling. It also includes a YouTube trailer viewer and supports Dark & Light themes.
 
-🚀 Features
+## **🚀 Features**
 🎥 Movies
 
 Fetch trending, popular, and top-rated movies
@@ -13,7 +13,7 @@ Search movies in real time
 
 Included YouTube video player for watching trailers
 
-🎨 UI / UX
+##**🎨 UI / UX**
 
 Fully built with Jetpack Compose
 
@@ -21,7 +21,7 @@ Dynamic theming — Light & Dark modes
 
 Responsive UI for multiple screen sizes
 
-🧱 Architecture
+##**🧱 Architecture**
 
 Clean Architecture (Domain, Data, Presentation layers)
 
@@ -31,7 +31,7 @@ Repository pattern
 
 Proper separation of concerns
 
-⚙️ Tech Stack
+## **⚙️ Tech Stack**
 
 Kotlin
 
@@ -49,7 +49,7 @@ TMDB API
 
 Material 3 Components
 
-🛠️ Project Setup
+##**🛠️ Project Setup**
 
 Clone the repository
 
@@ -66,6 +66,6 @@ TMDB_API_KEY=your_api_key
 
 Build and run the project in Android Studio Flamingo+
 
-📸 Screenshots 
+#**📸 Screenshots** 
 
 <img width="14912" height="6319" alt="Frame 3 (1) (1)" src="https://github.com/user-attachments/assets/144b1f46-68c9-4551-9203-d193750b0cbe" />
