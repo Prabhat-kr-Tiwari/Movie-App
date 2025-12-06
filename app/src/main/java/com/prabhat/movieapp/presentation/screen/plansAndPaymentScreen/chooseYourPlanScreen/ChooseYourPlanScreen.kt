@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -65,90 +67,16 @@ fun ChooseYourPlanScreen(
         Column(
             modifier = modifier
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.safeDrawing)
-                .fillMaxSize()
+//                .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surface),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp, bottom = 20.dp, start = 40.dp, end = 40.dp)
-                    .background(MaterialTheme.colorScheme.surface),
-                horizontalArrangement = Arrangement.Absolute.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .padding(end = 5.dp)
 
-                        .clip(CircleShape)
-                        .background(Color.Red)
-                        .size(24.dp), contentAlignment = Alignment.Center
-                ) {
-
-                    Text(
-                        text = "1",
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 12.sp
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .clip(RectangleShape)
-                        .width(50.dp)
-                        .background(Color.Red.copy(alpha = 0.5f))
-                        .height(4.dp)
-                )
-
-                Box(
-                    modifier = Modifier
-
-                        .padding(start = 5.dp, end = 5.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red.copy(alpha = 0.5f))
-
-                        .size(24.dp), contentAlignment = Alignment.Center
-                ) {
-
-                    Text(
-                        text = "2",
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 12.sp
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .clip(RectangleShape)
-                        .width(50.dp)
-                        .background(Color.Red.copy(alpha = 0.5f))
-                        .height(4.dp)
-                        .padding(start = 15.dp, end = 15.dp, top = 15.dp)
-                )
-
-
-                Box(
-                    modifier = Modifier
-
-                        .padding(start = 5.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red.copy(alpha = 0.5f))
-                        .size(24.dp), contentAlignment = Alignment.Center
-                ) {
-
-                    Text(
-                        text = "3",
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 12.sp
-                    )
-                }
-            }
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()

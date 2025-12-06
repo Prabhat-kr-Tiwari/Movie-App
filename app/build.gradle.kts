@@ -40,7 +40,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-//            buildConfigField("String", "API_KEY", "b52b167cdd0627e0ecc0924ce311cf15")
 
         }
     }
@@ -129,7 +128,7 @@ dependencies {
     implementation(libs.androidx.media3.common.ktx)
     implementation(libs.androidx.palette.ktx)
     debugImplementation(libs.androidx.ui.tooling)
-    kapt(libs.hilt.compiler)
+//    kapt(libs.hilt.compiler)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     kapt(libs.androidx.hilt.compiler)

@@ -3,6 +3,9 @@ package com.prabhat.movieapp.navigation
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,9 +29,9 @@ import com.prabhat.movieapp.presentation.screen.loginScreen.LoginScreen
 import com.prabhat.movieapp.presentation.screen.more.MoreScreen
 import com.prabhat.movieapp.presentation.screen.more.accountScreen.accountScreenRoot
 import com.prabhat.movieapp.presentation.screen.more.accountScreen.navigateToAccountScreen
-import com.prabhat.movieapp.presentation.screen.more.moreScreen
 import com.prabhat.movieapp.presentation.screen.more.settingsScreen.navigateToSettingScreen
 import com.prabhat.movieapp.presentation.screen.more.settingsScreen.settingScreenRoot
+import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.PaymentFlowWrapper
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.billingDetailsScreen.BillingDetailsScreen
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.choosePaymentModeScreen.ChoosePaymentModeScreen
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.ChooseYourPlanScreen
@@ -83,8 +86,8 @@ fun PerformNavigation(
 //    movieScreenViewModel: MovieScreenViewModel = hiltViewModel()
 ) {
 
-    val movieScreenViewModel :MovieScreenViewModel = hiltViewModel()
-    val downloadScreenViewModel : DownloadScreenViewModel = hiltViewModel()
+    val movieScreenViewModel: MovieScreenViewModel = hiltViewModel()
+    val downloadScreenViewModel: DownloadScreenViewModel = hiltViewModel()
 
 //    val navController = rememberNavController()
 
@@ -93,6 +96,7 @@ fun PerformNavigation(
         navController = navHostController,
         startDestination = SubGraph.onBoarding,
 //        modifier = Modifier.padding(innerPadding)
+
     ) {
 
 
@@ -120,44 +124,215 @@ fun PerformNavigation(
         }
 
         navigation<SubGraph.PlansAndPayment>(startDestination = PlansAndPaymentDestination.ChooseYourPlanScreen) {
-            composable<PlansAndPaymentDestination.ChooseYourPlanScreen> {
-                ChooseYourPlanScreen(
+            composable<PlansAndPaymentDestination.ChooseYourPlanScreen>(
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(500)
+                    )
+                }
+            ) {
+
+                /*ChooseYourPlanScreen(
                     navHostController = navHostController,
                     systemUiController = systemUiController,
                     statusBarColor = statusBarColor
-                )
+                )*/
+                PaymentFlowWrapper(
+                    currentStep = 1,
+                    navHostController,
+                    systemUiController,
+                    statusBarColor
+                ) {
+                    ChooseYourPlanScreen(
+                        navHostController = navHostController,
+                        systemUiController = systemUiController,
+                        statusBarColor = statusBarColor
+                    )
+                }
 
             }
-            composable<PlansAndPaymentDestination.ChooseYourPaymentModeScreen> {
-                ChoosePaymentModeScreen(
-                    navHostController = navHostController,
-                    systemUiController = systemUiController,
-                    statusBarColor = statusBarColor
-                )
+            composable<PlansAndPaymentDestination.ChooseYourPaymentModeScreen>(
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(500)
+                    )
+                }
+            ){
+                PaymentFlowWrapper(
+                    currentStep = 2,
+                    navHostController,
+                    systemUiController,
+                    statusBarColor
+                ) {
+                    ChoosePaymentModeScreen(
+                        navHostController = navHostController,
+                        systemUiController = systemUiController,
+                        statusBarColor = statusBarColor
+                    )
+                }
+
 
             }
-            composable<PlansAndPaymentDestination.BillingDetailsScreen> {
-                BillingDetailsScreen(
-                    navHostController = navHostController,
-                    systemUiController = systemUiController,
-                    statusBarColor = statusBarColor
-                )
+            composable<PlansAndPaymentDestination.BillingDetailsScreen>(
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(500)
+                    )
+                }
+            ) {
+                PaymentFlowWrapper(
+                    currentStep = 3,
+                    navHostController,
+                    systemUiController,
+                    statusBarColor
+                ) {
+                    BillingDetailsScreen(
+                        navHostController = navHostController,
+                        systemUiController = systemUiController,
+                        statusBarColor = statusBarColor
+                    )
+                }
+
 
             }
-            composable<PlansAndPaymentDestination.OtpScreen> {
-                OtpScreen(
-                    navHostController = navHostController,
-                    systemUiController = systemUiController,
-                    statusBarColor = statusBarColor
-                )
+            composable<PlansAndPaymentDestination.OtpScreen>(
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(500)
+                    )
+                }
+            ) {
+                PaymentFlowWrapper(
+                    currentStep = 4,
+                    navHostController,
+                    systemUiController,
+                    statusBarColor
+                ) {
+                    OtpScreen(
+                        navHostController = navHostController,
+                        systemUiController = systemUiController,
+                        statusBarColor = statusBarColor
+                    )
+                }
+
 
             }
-            composable<PlansAndPaymentDestination.VerifyPaymentScreen> {
-                VerifyPaymentScreen(
-                    navHostController = navHostController,
-                    systemUiController = systemUiController,
-                    statusBarColor = statusBarColor
-                )
+            composable<PlansAndPaymentDestination.VerifyPaymentScreen>(
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(500)
+                    )
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(500)
+                    )
+                }
+            ) {
+                PaymentFlowWrapper(
+                    currentStep = 5,
+                    navHostController,
+                    systemUiController,
+                    statusBarColor
+                ) {
+
+                    VerifyPaymentScreen(
+                        navHostController = navHostController,
+                        systemUiController = systemUiController,
+                        statusBarColor = statusBarColor
+                    )
+                }
+
 
             }
         }
@@ -220,7 +395,10 @@ fun PerformNavigation(
             }
             composable<BottomNavigationDestination.MovieCategoriesScreen> {
 
-                MovieCategoriesScreen(movieScreenViewModel = movieScreenViewModel,navHostController = navHostController)
+                MovieCategoriesScreen(
+                    movieScreenViewModel = movieScreenViewModel,
+                    navHostController = navHostController
+                )
 
             }
             composable<BottomNavigationDestination.MovieDownloadScreen> {
@@ -230,7 +408,11 @@ fun PerformNavigation(
             }
             composable<BottomNavigationDestination.MoreScreen> {
 
-                MoreScreen(onOpenAccount = {navHostController.navigateToAccountScreen() }, onOpenSettings = {navHostController.navigateToSettingScreen()}, innerPaddingValues = innerPadding)
+                MoreScreen(
+                    onOpenAccount = { navHostController.navigateToAccountScreen() },
+                    onOpenSettings = { navHostController.navigateToSettingScreen() },
+                    innerPaddingValues = innerPadding
+                )
             }
 //            moreScreen(onOpenAccount = {navHostController.navigateToAccountScreen() }, onOpenSettings = {navHostController.navigateToSettingScreen()})
             /* composable<BottomNavigationDestination.MovieDetailScreen>(typeMap = mapOf(
@@ -257,7 +439,9 @@ fun PerformNavigation(
                     navHostController.navigateUp()
                 }
             )
-            settingScreenRoot(innerPaddingValues = innerPadding, onNavigateUp =  { navHostController.navigateUp() })
+            settingScreenRoot(
+                innerPaddingValues = innerPadding,
+                onNavigateUp = { navHostController.navigateUp() })
         }
         /*navigation<SubGraph.MovieDetailsScreen>(startDestination = HomeDestination.MovieHomeScreen){
 
@@ -291,19 +475,16 @@ fun PerformNavigation(
                     statusBarColor = statusBarColor,
                     innerPadding = innerPadding,
                     movieScreenViewModel = movieScreenViewModel,
-                            navHostController = navHostController
+                    navHostController = navHostController
                 )
 
 
             }
         }
-       /* navigation<SubGraph.MoreAndSetting>(startDestination = BottomNavigationDestination.MoreScreen.route) {
-            accountScreenRoot { navHostController.navigateUp() }
-            settingScreenRoot { navHostController.navigateUp() }
-        }*/
-
-
-
+        /* navigation<SubGraph.MoreAndSetting>(startDestination = BottomNavigationDestination.MoreScreen.route) {
+             accountScreenRoot { navHostController.navigateUp() }
+             settingScreenRoot { navHostController.navigateUp() }
+         }*/
 
 
     }
