@@ -106,7 +106,8 @@ TMDB_API_KEY=your_api_key_here
 
 ## 📸 Screenshots
 
-![](C:\Users\prabhat\Downloads\movie%20screenshot.png)
+<img width="14912" height="6319" alt="movie screenshot" src="https://github.com/user-attachments/assets/d017ceea-e771-4105-942c-ec3c0df471c5" />
+
 ---
 
 ## 🔮 Future Improvements
