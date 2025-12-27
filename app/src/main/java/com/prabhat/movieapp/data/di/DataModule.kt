@@ -11,6 +11,7 @@ import com.prabhat.movieapp.data.appSettings.AppSettings
 import com.prabhat.movieapp.data.appSettings.AppSettingsSerializer
 import com.prabhat.movieapp.data.local.upcomingMovie.MovieDatabase
 import com.prabhat.movieapp.data.local.upcomingMovie.UpComingMovieEntity
+import com.prabhat.movieapp.data.local.userPrefrence.UserPreferenceDao
 import com.prabhat.movieapp.data.local.watchList.WatchlistDao
 import com.prabhat.movieapp.data.network.MovieApiService
 import com.prabhat.movieapp.data.network.movie.UpComingMovieRemoteMediator
@@ -101,5 +102,12 @@ object DataModule {
     fun provideWatchListDao(movieDatabase: MovieDatabase): WatchlistDao{
         return movieDatabase.watchlistDao
     }
+    @Provides
+    @Singleton
+    fun provideUserPreferenceDao(movieDatabase: MovieDatabase): UserPreferenceDao{
+        return movieDatabase.userPreferenceDao
+    }
+
+
 }
 

@@ -74,12 +74,13 @@ fun ChooseAvatarScreen(
 
         Column(
 
-            Modifier.padding(innerPadding)
+            Modifier .background(MaterialTheme.colorScheme.surface)
+                .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.safeDrawing)
 
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface),
+               ,
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -88,7 +89,9 @@ fun ChooseAvatarScreen(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surface)
+                    .height(10.dp))
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

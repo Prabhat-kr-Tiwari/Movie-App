@@ -75,21 +75,23 @@ fun EnterUserNameScreen(
             .background(MaterialTheme.colorScheme.surface)
     ) { innerPadding ->
         Column(
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier  .background(MaterialTheme.colorScheme.surface).padding(innerPadding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.safeDrawing)
 
-                .background(MaterialTheme.colorScheme.surface),
+              ,
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .height(10.dp))
 
             Column(
-                modifier = Modifier,
+                modifier = Modifier .background(MaterialTheme.colorScheme.surface),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

@@ -32,6 +32,7 @@ import com.prabhat.movieapp.presentation.screen.more.settingsScreen.settingScree
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.billingDetailsScreen.BillingDetailsScreen
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.choosePaymentModeScreen.ChoosePaymentModeScreen
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.ChooseYourPlanScreen
+import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.ChooseYourPlanScreenViewModel
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.otpScreen.OtpScreen
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.verifyPaymentScreen.VerifyPaymentScreen
 import com.prabhat.movieapp.presentation.screen.profileScreen.chooseAvatarScreen.ChooseAvatarScreen
@@ -124,7 +125,7 @@ fun PerformNavigation(
                 ChooseYourPlanScreen(
                     navHostController = navHostController,
                     systemUiController = systemUiController,
-                    statusBarColor = statusBarColor
+                    statusBarColor = statusBarColor,
                 )
 
             }

@@ -66,22 +66,30 @@ fun EnterPasswordScreen(
     systemUiController: SystemUiController,
     statusBarColor: Color
 ) {
-    Scaffold(  modifier = modifier .windowInsetsPadding(WindowInsets.safeDrawing)
+    Scaffold(
+        modifier = modifier
+            .windowInsetsPadding(WindowInsets.safeDrawing)
 
-        .background(MaterialTheme.colorScheme.surface)) {innerPadding->
+            .background(MaterialTheme.colorScheme.surface)
+    ) { innerPadding ->
 
 
         Column(
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier .background(MaterialTheme.colorScheme.surface)
+                .padding(innerPadding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .background(MaterialTheme.colorScheme.surface),
+               ,
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surface)
+                    .height(10.dp)
+            )
 
             Column(
                 modifier = Modifier,
@@ -165,11 +173,13 @@ fun EnterPasswordScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 40.dp)
                             .clip(RoundedCornerShape(50.dp))
-                            .background(if (isSystemInDarkTheme()){
-                                MaterialTheme.colorScheme.onBackground
-                            }else{
-                                MaterialTheme.colorScheme.surfaceContainerHighest
-                            })
+                            .background(
+                                if (isSystemInDarkTheme()) {
+                                    MaterialTheme.colorScheme.onBackground
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceContainerHighest
+                                }
+                            )
                             .padding(10.dp),
                         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         lineLimits = TextFieldLineLimits.SingleLine,
@@ -244,7 +254,7 @@ fun EnterPasswordScreen(
                         if (isPasswordValid(password = passwordState.text.toString())) {
                             colorStateOfValidation = Color.Green
                         } else {
-                            colorStateOfValidation =    MaterialTheme.colorScheme.onBackground
+                            colorStateOfValidation = MaterialTheme.colorScheme.onBackground
 
                         }
 
@@ -374,11 +384,12 @@ fun PreviewEnterPasswordScreen(modifier: Modifier = Modifier) {
 
 
 }
+
 @Preview(
     name = "Dark Mode",
     showBackground = true,
     uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
-            showSystemUi = true
+    showSystemUi = true
 
 
 )

@@ -61,92 +61,17 @@ fun ChoosePaymentModeScreen(
     ) { innerPadding ->
         systemUiController.setStatusBarColor(color = statusBarColor)
         Column(
-            modifier = modifier
+            modifier = modifier .background(MaterialTheme.colorScheme.surface)
                 .padding(innerPadding)
                 .windowInsetsPadding(WindowInsets.safeDrawing)
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface),
+               ,
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp, bottom = 20.dp, start = 40.dp, end = 40.dp)
-                    .background(MaterialTheme.colorScheme.surface),
-                horizontalArrangement = Arrangement.Absolute.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .padding(end = 5.dp)
 
-                        .clip(CircleShape)
-                        .background(Color.Red)
-                        .size(24.dp), contentAlignment = Alignment.Center
-                ) {
-
-                    Text(
-                        text = "1",
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 12.sp
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .clip(RectangleShape)
-                        .width(50.dp)
-                        .background(Color.Red)
-                        .height(4.dp)
-                )
-
-                Box(
-                    modifier = Modifier
-
-                        .padding(start = 5.dp, end = 5.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red)
-
-                        .size(24.dp), contentAlignment = Alignment.Center
-                ) {
-
-                    Text(
-                        text = "2",
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 12.sp
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .clip(RectangleShape)
-                        .width(50.dp)
-                        .background(Color.Red.copy(alpha = 0.5f))
-                        .height(4.dp)
-                        .padding(start = 15.dp, end = 15.dp, top = 15.dp)
-                )
-
-
-                Box(
-                    modifier = Modifier
-
-                        .padding(start = 5.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red.copy(alpha = 0.5f))
-                        .size(24.dp), contentAlignment = Alignment.Center
-                ) {
-
-                    Text(
-                        text = "3",
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 12.sp
-                    )
-                }
-            }
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
