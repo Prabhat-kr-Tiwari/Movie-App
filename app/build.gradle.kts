@@ -3,12 +3,16 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+//    alias(libs.plugins.jetbrains.kotlin.android)
+//    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.legacy.kapt)
+
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinx.serialization)
-    id("kotlin-parcelize")
+    alias(libs.plugins.stability.analyzer)
+//    id("kotlin-parcelize")
+    alias(libs.plugins.parcelize)
 }
 /*val  apikeyPropertiesFile = rootProject.file("apikey.properties")
 val apikeyProperties =  Properties()
@@ -48,8 +52,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"    }
+    kotlin {
+        jvmToolchain(11)
+    }
     buildFeatures {
         compose = true
         buildConfig = true
