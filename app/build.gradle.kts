@@ -5,7 +5,8 @@ plugins {
     alias(libs.plugins.android.application)
 //    alias(libs.plugins.jetbrains.kotlin.android)
 //    alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.legacy.kapt)
+//    alias(libs.plugins.legacy.kapt)
+    alias(libs.plugins.ksp)
 
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.compose.compiler)
@@ -49,11 +50,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlin {
-        jvmToolchain(11)
+        jvmToolchain(17)
     }
     buildFeatures {
         compose = true
@@ -70,9 +71,9 @@ android {
     }
 }
 
-kapt {
+/*kapt {
     correctErrorTypes = true
-}
+}*/
 
 dependencies {
 
@@ -134,10 +135,13 @@ dependencies {
     implementation(libs.androidx.media3.common.ktx)
     implementation(libs.androidx.palette.ktx)
     debugImplementation(libs.androidx.ui.tooling)
-    kapt(libs.hilt.compiler)
-    kapt(libs.hilt.android.compiler)
+//    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
+//    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-    kapt(libs.androidx.hilt.compiler)
+//    kapt(libs.androidx.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
     implementation(libs.androidx.core.splashscreen)
 
 
@@ -163,7 +167,8 @@ dependencies {
 
     // Room
     implementation (libs.androidx.room.ktx)
-    kapt (libs.androidx.room.compiler)
+//    kapt (libs.androidx.room.compiler)
+    ksp (libs.androidx.room.compiler)
     implementation (libs.androidx.room.paging)
 
     //icon

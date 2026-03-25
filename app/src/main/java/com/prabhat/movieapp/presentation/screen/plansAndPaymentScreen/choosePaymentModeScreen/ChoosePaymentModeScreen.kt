@@ -39,11 +39,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.prabhat.movieapp.navigation.PlansAndPaymentDestination
+import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.ChoosePlanEvent
+import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.SelectablePlanButton
 import com.prabhat.movieapp.ui.theme.MovieAppTheme
 
 
@@ -52,8 +56,21 @@ fun ChoosePaymentModeScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     systemUiController: SystemUiController,
-    statusBarColor: Color
+    statusBarColor: Color,
+    choosePaymentModeScreenViewModel: ChoosePaymentModeScreenViewModel= hiltViewModel()
 ) {
+    val state by choosePaymentModeScreenViewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        choosePaymentModeScreenViewModel.navigationChannel.collect { event ->
+            when(event){
+                is ChoosePaymentModeNavigationEvent.NavigationNext->{
+                    navHostController.navigate(PlansAndPaymentDestination.BillingDetailsScreen)
+                    choosePaymentModeScreenViewModel.resetNavigationFlow()
+                }
+            }
+
+        }
+    }
     Scaffold(
         modifier = modifier
 
@@ -117,8 +134,30 @@ fun ChoosePaymentModeScreen(
                 modifier = Modifier.background(MaterialTheme.colorScheme.surface)
             ) {
 
+                // Credit/Debit Card
+                SelectablePaymentModeButton(
+                    title = "Credit/Debit Card",
 
-                Box(
+                    isSelected = state.selectedMode == "credit_debit_card",
+                    onClick = {
+                        choosePaymentModeScreenViewModel.onEvent(
+                            ChoosePaymentModeEvent.ModeSelected("credit_debit_card")
+                        )
+                    }
+                )
+
+                // Netbanking
+                SelectablePaymentModeButton(
+                    title = "NetBanking",
+
+                    isSelected = state.selectedMode == "netbanking",
+                    onClick = {
+                        choosePaymentModeScreenViewModel.onEvent(ChoosePaymentModeEvent.ModeSelected("netbanking"))
+                    }
+                )
+
+
+               /* Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.Start)
@@ -176,9 +215,9 @@ fun ChoosePaymentModeScreen(
 
 
                     }
-                }
+                }*/
 
-                Box(
+                /*Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 30.dp, start = 20.dp, end = 20.dp)
@@ -235,7 +274,7 @@ fun ChoosePaymentModeScreen(
 
 
                     }
-                }
+                }*/
             }
 
 
@@ -261,13 +300,13 @@ fun ChoosePaymentModeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
             ) {
-                var isContinueClicked by remember { mutableStateOf(false) }
+               /* var isContinueClicked by remember { mutableStateOf(false) }
                 LaunchedEffect(isContinueClicked) {
                     if (isContinueClicked) {
 
                         navHostController.navigate(PlansAndPaymentDestination.BillingDetailsScreen)
                     }
-                }
+                }*/
 
                 Box(
                     modifier = Modifier
@@ -283,22 +322,24 @@ fun ChoosePaymentModeScreen(
 
                         Button(
                             onClick = {
-                                isContinueClicked = !isContinueClicked // Toggle the clicked state
+//                                isContinueClicked = !isContinueClicked // Toggle the clicked state
+                                choosePaymentModeScreenViewModel.onEvent(ChoosePaymentModeEvent.ContinueClicked)
 
                             },
+                            enabled = state.selectedMode.isNotEmpty()&&!state.isLoading,
                             shape = RoundedCornerShape(20.dp),
                             border = BorderStroke(
                                 1.dp,
-                                if (isContinueClicked) Color.Transparent else Color.Red
+                                if (state.isLoading) Color.Transparent else Color.Red
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isContinueClicked) Color.Red else MaterialTheme.colorScheme.surface,
-                                disabledContainerColor = if (isContinueClicked) Color.Red else Color.Black,
+                                containerColor = if (state.isLoading) Color.Red else MaterialTheme.colorScheme.background,
+                                disabledContainerColor = MaterialTheme.colorScheme.surface,
                                 contentColor = Color.White,
-                                disabledContentColor = if (isContinueClicked) Color.Black else Color.White
+                                disabledContentColor = Color.White
                             ),
                             elevation = ButtonDefaults.elevatedButtonElevation(
                                 defaultElevation = 20.dp,
@@ -334,6 +375,56 @@ fun ChoosePaymentModeScreen(
         }
     }
 
+}
+@Composable
+fun SelectablePaymentModeButton(
+    title: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 30.dp, start = 20.dp, end = 20.dp)
+    ) {
+        Button(
+            onClick = onClick,
+            shape = RoundedCornerShape(20.dp),
+            border = BorderStroke(
+                1.dp,
+                if (isSelected) Color.Transparent else Color.Red
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isSelected) Color.Red else MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onBackground
+            ),
+            elevation = ButtonDefaults.elevatedButtonElevation(
+                defaultElevation = 20.dp,
+                pressedElevation = 30.dp,
+                focusedElevation = 30.dp,
+                hoveredElevation = 30.dp
+            )
+        ) {
+
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp, textAlign = TextAlign.Start,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+            }
+        }
+    }
 }
 
 @ThemeAnnotation

@@ -46,8 +46,9 @@ import com.prabhat.movieapp.domain.repository.userPreference.UserPreferenceRepos
 import com.prabhat.movieapp.domain.use_case.userPreference.SavePreferenceUseCase
 import com.prabhat.movieapp.navigation.PlansAndPaymentDestination
 import com.prabhat.movieapp.ui.theme.MovieAppTheme
+import com.skydoves.compose.stability.runtime.TraceRecomposition
 
-
+@TraceRecomposition("ChooseYourPlanScreen")
 @Composable
 fun ChooseYourPlanScreen(
     modifier: Modifier = Modifier,

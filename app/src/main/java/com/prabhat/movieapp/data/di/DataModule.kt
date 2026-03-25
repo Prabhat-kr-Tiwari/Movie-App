@@ -9,6 +9,7 @@ import androidx.paging.PagingConfig
 import androidx.room.Room
 import com.prabhat.movieapp.data.appSettings.AppSettings
 import com.prabhat.movieapp.data.appSettings.AppSettingsSerializer
+import com.prabhat.movieapp.data.local.cardDetails.CardDetailsDao
 import com.prabhat.movieapp.data.local.upcomingMovie.MovieDatabase
 import com.prabhat.movieapp.data.local.upcomingMovie.UpComingMovieEntity
 import com.prabhat.movieapp.data.local.userPrefrence.UserPreferenceDao
@@ -108,6 +109,11 @@ object DataModule {
         return movieDatabase.userPreferenceDao
     }
 
+    @Provides
+    @Singleton
+    fun provideBillingDetailsDao(movieDatabase: MovieDatabase): CardDetailsDao{
+        return movieDatabase.cardDetailsDao
+    }
 
 }
 

@@ -1,8 +1,10 @@
 package com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.billingDetailsScreen
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +24,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
@@ -48,10 +51,13 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.SystemUiController
@@ -64,8 +70,26 @@ fun BillingDetailsScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     systemUiController: SystemUiController,
-    statusBarColor: Color
+    statusBarColor: Color,
+    billingDetailsScreenViewModel: BillingDetailsScreenViewModel= hiltViewModel()
 ) {
+    val state by billingDetailsScreenViewModel.uiState.collectAsStateWithLifecycle()
+    Log.d("PRABHATBILLING", "BillingDetailsScreen: ${state.firstName}")
+    LaunchedEffect(Unit) {
+        billingDetailsScreenViewModel.navigationChannel.collect{event->
+            when(event){
+                BillingDetailsNavigationEvent.NavigateBack ->{
+                    navHostController.popBackStack()
+
+                }
+                BillingDetailsNavigationEvent.NavigateNext -> {
+                    navHostController.navigate(PlansAndPaymentDestination.OtpScreen)
+
+                }
+            }
+
+        }
+    }
     Scaffold(
         modifier = modifier
 
@@ -73,8 +97,9 @@ fun BillingDetailsScreen(
     ) { innerPadding ->
         systemUiController.setStatusBarColor(color = statusBarColor)
         Column(
-            modifier = modifier.background(MaterialTheme.colorScheme.surface)
-            .padding(innerPadding)
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.safeDrawing)
 
@@ -124,31 +149,39 @@ fun BillingDetailsScreen(
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier .background(MaterialTheme.colorScheme.surface)
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(top = 30.dp)
 
 
 
             ) {
 
-                val firstNameState = rememberTextFieldState()
 
                 BasicTextField(
-                    state = firstNameState,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+
+                    state = billingDetailsScreenViewModel.firstNameState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
                         .clip(RoundedCornerShape(50.dp))
-                        .background(if (isSystemInDarkTheme()){
-                            MaterialTheme.colorScheme.onBackground
-                        }else{
-                            MaterialTheme.colorScheme.surfaceContainerHighest
-                        })
+                        .background(
+                            if (isSystemInDarkTheme()) {
+                                MaterialTheme.colorScheme.onBackground
+                            } else {
+                                MaterialTheme.colorScheme.surfaceContainerHighest
+                            }
+                        )
                         .padding(10.dp),
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                     lineLimits = TextFieldLineLimits.SingleLine,
                     textStyle = TextStyle(
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color =if (isSystemInDarkTheme()){
+                            MaterialTheme.colorScheme.surface
+                        }else{
+                            MaterialTheme.colorScheme.onBackground
+                        },
                         fontSize = 18.sp
                     ),
                     decorator = { innerTextField ->
@@ -174,7 +207,7 @@ fun BillingDetailsScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Box(modifier = Modifier.weight(1f)) {
 
-                                if (firstNameState.text.isEmpty()) {
+                                if (billingDetailsScreenViewModel.firstNameState.text.isEmpty()) {
                                     androidx.compose.material3.Text(
                                         text = "FirstName",
                                         color = if (isSystemInDarkTheme()) {
@@ -186,14 +219,14 @@ fun BillingDetailsScreen(
                                 }
                                 innerTextField()
                             }
-                            if (firstNameState.text.isNotEmpty()) {
+                            if (billingDetailsScreenViewModel.firstNameState.text.isNotEmpty()) {
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Icon(
                                     imageVector = Icons.Rounded.Clear,
                                     contentDescription = null,
                                     modifier = Modifier.clickable {
-                                        firstNameState.edit {
-                                            replace(0, firstNameState.text.length, "")
+                                        billingDetailsScreenViewModel.firstNameState.edit {
+                                            replace(0, billingDetailsScreenViewModel.firstNameState.text.length, "")
                                         }
                                     })
                             }
@@ -207,24 +240,31 @@ fun BillingDetailsScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
 
-                val lastNameState = rememberTextFieldState()
 
                 BasicTextField(
-                    state = lastNameState,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+
+                    state = billingDetailsScreenViewModel.lastNameState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
                         .clip(RoundedCornerShape(50.dp))
-                        .background(if (isSystemInDarkTheme()){
-                            MaterialTheme.colorScheme.onBackground
-                        }else{
-                            MaterialTheme.colorScheme.surfaceContainerHighest
-                        })
+                        .background(
+                            if (isSystemInDarkTheme()) {
+                                MaterialTheme.colorScheme.onBackground
+                            } else {
+                                MaterialTheme.colorScheme.surfaceContainerHighest
+                            }
+                        )
                         .padding(10.dp),
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                     lineLimits = TextFieldLineLimits.SingleLine,
                     textStyle = TextStyle(
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = if (isSystemInDarkTheme()){
+                            MaterialTheme.colorScheme.surface
+                        }else{
+                            MaterialTheme.colorScheme.onBackground
+                        },
                         fontSize = 18.sp
                     ),
                     decorator = { innerTextField ->
@@ -250,7 +290,7 @@ fun BillingDetailsScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Box(modifier = Modifier.weight(1f)) {
 
-                                if (firstNameState.text.isEmpty()) {
+                                if (billingDetailsScreenViewModel.lastNameState.text.isEmpty()) {
                                     androidx.compose.material3.Text(
                                         text = "LastName",
                                         color = if (isSystemInDarkTheme()) {
@@ -262,14 +302,14 @@ fun BillingDetailsScreen(
                                 }
                                 innerTextField()
                             }
-                            if (lastNameState.text.isNotEmpty()) {
+                            if (billingDetailsScreenViewModel.lastNameState.text.isNotEmpty()) {
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Icon(
                                     imageVector = Icons.Rounded.Clear,
                                     contentDescription = null,
                                     modifier = Modifier.clickable {
-                                        lastNameState.edit {
-                                            replace(0, lastNameState.text.length, "")
+                                        billingDetailsScreenViewModel.lastNameState.edit {
+                                            replace(0, billingDetailsScreenViewModel.lastNameState.text.length, "")
                                         }
                                     })
                             }
@@ -286,24 +326,31 @@ fun BillingDetailsScreen(
                 //
 
 
-                val cardNumberState = rememberTextFieldState()
 
                 BasicTextField(
-                    state = cardNumberState,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+
+                    state = billingDetailsScreenViewModel.cardNumberState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
                         .clip(RoundedCornerShape(50.dp))
-                        .background(if (isSystemInDarkTheme()){
-                            MaterialTheme.colorScheme.onBackground
-                        }else{
-                            MaterialTheme.colorScheme.surfaceContainerHighest
-                        })
+                        .background(
+                            if (isSystemInDarkTheme()) {
+                                MaterialTheme.colorScheme.onBackground
+                            } else {
+                                MaterialTheme.colorScheme.surfaceContainerHighest
+                            }
+                        )
                         .padding(10.dp),
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                     lineLimits = TextFieldLineLimits.SingleLine,
                     textStyle = TextStyle(
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = if (isSystemInDarkTheme()){
+                            MaterialTheme.colorScheme.surface
+                        }else{
+                            MaterialTheme.colorScheme.onBackground
+                        },
                         fontSize = 18.sp
                     ),
                     decorator = { innerTextField ->
@@ -329,7 +376,7 @@ fun BillingDetailsScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Box(modifier = Modifier.weight(1f)) {
 
-                                if (firstNameState.text.isEmpty()) {
+                                if (billingDetailsScreenViewModel.cardNumberState.text.isEmpty()) {
                                     Text(
                                         text = "CardNumber",
                                         color = if (isSystemInDarkTheme()) {
@@ -341,14 +388,14 @@ fun BillingDetailsScreen(
                                 }
                                 innerTextField()
                             }
-                            if (cardNumberState.text.isNotEmpty()) {
+                            if (billingDetailsScreenViewModel.cardNumberState.text.isNotEmpty()) {
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Icon(
                                     imageVector = Icons.Rounded.Clear,
                                     contentDescription = null,
                                     modifier = Modifier.clickable {
-                                        cardNumberState.edit {
-                                            replace(0, cardNumberState.text.length, "")
+                                        billingDetailsScreenViewModel.cardNumberState.edit {
+                                            replace(0, billingDetailsScreenViewModel.cardNumberState.text.length, "")
                                         }
                                     })
                             }
@@ -363,24 +410,30 @@ fun BillingDetailsScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 //
-                val expirationDateState = rememberTextFieldState()
 
                 BasicTextField(
-                    state = cardNumberState,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    state = billingDetailsScreenViewModel.expirationDateState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
                         .clip(RoundedCornerShape(50.dp))
-                        .background(if (isSystemInDarkTheme()){
-                            MaterialTheme.colorScheme.onBackground
-                        }else{
-                            MaterialTheme.colorScheme.surfaceContainerHighest
-                        })
+                        .background(
+                            if (isSystemInDarkTheme()) {
+                                MaterialTheme.colorScheme.onBackground
+                            } else {
+                                MaterialTheme.colorScheme.surfaceContainerHighest
+                            }
+                        )
                         .padding(10.dp),
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                     lineLimits = TextFieldLineLimits.SingleLine,
                     textStyle = TextStyle(
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = if (isSystemInDarkTheme()){
+                            MaterialTheme.colorScheme.surface
+                        }else{
+                            MaterialTheme.colorScheme.onBackground
+                        },
                         fontSize = 18.sp
                     ),
                     decorator = { innerTextField ->
@@ -406,9 +459,9 @@ fun BillingDetailsScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Box(modifier = Modifier.weight(1f)) {
 
-                                if (expirationDateState.text.isEmpty()) {
+                                if ( billingDetailsScreenViewModel.expirationDateState.text.isEmpty()) {
                                     Text(
-                                        text = "ExpirationDate(MM/YY) ",
+                                        text = "ExpirationDate (MM/YY) ",
                                         color = if (isSystemInDarkTheme()) {
                                             MaterialTheme.colorScheme.background.copy(0.5f)
                                         } else {
@@ -418,14 +471,14 @@ fun BillingDetailsScreen(
                                 }
                                 innerTextField()
                             }
-                            if (expirationDateState.text.isNotEmpty()) {
+                            if ( billingDetailsScreenViewModel.expirationDateState.text.isNotEmpty()) {
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Icon(
                                     imageVector = Icons.Rounded.Clear,
                                     contentDescription = null,
                                     modifier = Modifier.clickable {
-                                        expirationDateState.edit {
-                                            replace(0, expirationDateState.text.length, "")
+                                        billingDetailsScreenViewModel.expirationDateState.edit {
+                                            replace(0,  billingDetailsScreenViewModel.expirationDateState.text.length, "")
                                         }
                                     })
                             }
@@ -441,18 +494,19 @@ fun BillingDetailsScreen(
 
 
                 //
-                val securityCodeState = rememberTextFieldState()
 
                 BasicTextField(
-                    state = cardNumberState,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+
+                    state = billingDetailsScreenViewModel.securityCodeState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
                         .clip(RoundedCornerShape(50.dp))
                         .background(
-                            if (isSystemInDarkTheme()){
+                            if (isSystemInDarkTheme()) {
                                 MaterialTheme.colorScheme.onBackground
-                            }else{
+                            } else {
                                 MaterialTheme.colorScheme.surfaceContainerHighest
                             }
 
@@ -461,7 +515,11 @@ fun BillingDetailsScreen(
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                     lineLimits = TextFieldLineLimits.SingleLine,
                     textStyle = TextStyle(
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = if (isSystemInDarkTheme()){
+                            MaterialTheme.colorScheme.surface
+                        }else{
+                            MaterialTheme.colorScheme.onBackground
+                        },
                         fontSize = 18.sp
                     ),
                     decorator = { innerTextField ->
@@ -487,9 +545,9 @@ fun BillingDetailsScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Box(modifier = Modifier.weight(1f)) {
 
-                                if (securityCodeState.text.isEmpty()) {
+                                if (billingDetailsScreenViewModel.securityCodeState.text.isEmpty()) {
                                     Text(
-                                        text = "ExpirationDate(MM/YY) ",
+                                        text = "Security Code (CVV) ",
                                         color = if (isSystemInDarkTheme()) {
                                             MaterialTheme.colorScheme.background.copy(0.5f)
                                         } else {
@@ -499,14 +557,14 @@ fun BillingDetailsScreen(
                                 }
                                 innerTextField()
                             }
-                            if (securityCodeState.text.isNotEmpty()) {
+                            if (billingDetailsScreenViewModel.securityCodeState.text.isNotEmpty()) {
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Icon(
                                     imageVector = Icons.Rounded.Clear,
                                     contentDescription = null,
                                     modifier = Modifier.clickable {
-                                        securityCodeState.edit {
-                                            replace(0, securityCodeState.text.length, "")
+                                        billingDetailsScreenViewModel.securityCodeState.edit {
+                                            replace(0, billingDetailsScreenViewModel.securityCodeState.text.length, "")
                                         }
                                     })
                             }
@@ -531,7 +589,11 @@ fun BillingDetailsScreen(
             ) {
 
                 Text(text = "Movies & Series $20/month", color = MaterialTheme.colorScheme.onBackground)
-                Text(text = "Change", color = Color.Red)
+                Text(text = "Change", color = Color.Red, modifier = modifier.clickable{
+                    billingDetailsScreenViewModel.onEvent(
+                        BillingDetailsEvent.ChangeClicked
+                    )
+                })
             }
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -539,14 +601,7 @@ fun BillingDetailsScreen(
                 verticalArrangement = Arrangement.Bottom
             ) {
 
-                var isContinueClicked by remember {
-                    mutableStateOf(false)
-                }
-                LaunchedEffect(isContinueClicked) {
-                    if (isContinueClicked) {
-                        navHostController.navigate(PlansAndPaymentDestination.OtpScreen)
-                    }
-                }
+
 
 
                 Box(
@@ -563,22 +618,31 @@ fun BillingDetailsScreen(
 
                         Button(
                             onClick = {
-                                isContinueClicked = !isContinueClicked // Toggle the clicked state
+                                billingDetailsScreenViewModel.onEvent(
+                                    BillingDetailsEvent.ContinueClicked
+                                )
 
                             },
+                            enabled = billingDetailsScreenViewModel.firstNameState.text.isNotEmpty()
+                                    && billingDetailsScreenViewModel.lastNameState.text.isNotEmpty()
+                                    && billingDetailsScreenViewModel.cardNumberState.text.isNotEmpty()
+                                    && billingDetailsScreenViewModel.expirationDateState.text.isNotEmpty()
+                                    && billingDetailsScreenViewModel.securityCodeState.text.isNotEmpty()
+                                    && !state.isLoading,
+
                             shape = RoundedCornerShape(20.dp),
                             border = BorderStroke(
                                 1.dp,
-                                if (isContinueClicked) Color.Transparent else Color.Red
+                                if (state.isLoading) Color.Transparent else Color.Red
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isContinueClicked) Color.Red else MaterialTheme.colorScheme.surface,
-                                disabledContainerColor = if (isContinueClicked) Color.Red else Color.Black,
+                                containerColor = if( state.isLoading) Color.Red else MaterialTheme.colorScheme.surface,
+                                disabledContainerColor = MaterialTheme.colorScheme.surface,
                                 contentColor = Color.White,
-                                disabledContentColor = if (isContinueClicked) Color.Black else Color.White
+                                disabledContentColor = Color.White
                             ),
                             elevation = ButtonDefaults.elevatedButtonElevation(
                                 defaultElevation = 20.dp,

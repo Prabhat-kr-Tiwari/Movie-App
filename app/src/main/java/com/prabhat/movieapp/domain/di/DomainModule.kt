@@ -2,15 +2,18 @@ package com.prabhat.movieapp.domain.di
 
 import androidx.datastore.core.DataStore
 import com.prabhat.movieapp.data.appSettings.AppSettings
+import com.prabhat.movieapp.data.local.cardDetails.CardDetailsDao
 import com.prabhat.movieapp.data.local.userPrefrence.UserPreferenceDao
 import com.prabhat.movieapp.data.local.watchList.WatchlistDao
 import com.prabhat.movieapp.data.network.MovieApiService
 import com.prabhat.movieapp.data.repository.AuthenticationRepositoryImpl
+import com.prabhat.movieapp.data.repository.cardDetails.CardDetailsRepositoryImpl
 import com.prabhat.movieapp.data.repository.movie.MovieRepositoryImpl
 import com.prabhat.movieapp.data.repository.userPreference.UserPreferenceRepositoryImpl
 import com.prabhat.movieapp.data.repository.watchList.WatchlistRepositoryImpl
 import com.prabhat.movieapp.domain.repository.AuthenticationRepository
 import com.prabhat.movieapp.domain.repository.WatchlistRepository
+import com.prabhat.movieapp.domain.repository.cardDetails.CardDetailsRepository
 import com.prabhat.movieapp.domain.repository.movie.MovieRepository
 import com.prabhat.movieapp.domain.repository.userPreference.UserPreferenceRepository
 import com.prabhat.movieapp.mappers.popularSeries.PopularSeriesDTOToPopularSeriesMapper
@@ -63,5 +66,11 @@ object DomainModule {
     @Singleton
     fun provideUserPreferenceRepo(userPreferenceDao: UserPreferenceDao): UserPreferenceRepository {
         return UserPreferenceRepositoryImpl(userPreferenceDao = userPreferenceDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCardDetailsRepo(cardDetailsDao: CardDetailsDao): CardDetailsRepository{
+        return CardDetailsRepositoryImpl(cardDetailsDao = cardDetailsDao)
     }
 }
