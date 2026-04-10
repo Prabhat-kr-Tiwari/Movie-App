@@ -63,6 +63,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
@@ -106,7 +107,7 @@ import com.prabhat.movieapp.ui.theme.MovieAppTheme
 
 @Composable
 fun MovieCategoriesScreen(
-    movieScreenViewModel: MovieScreenViewModel,
+    movieScreenViewModel: MovieScreenViewModel= hiltViewModel(),
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
 ) {

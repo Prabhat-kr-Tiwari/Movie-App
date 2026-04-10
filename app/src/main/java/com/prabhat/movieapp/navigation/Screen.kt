@@ -1,5 +1,6 @@
 package com.prabhat.movieapp.navigation
 
+import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.PlanType
 import kotlinx.serialization.Serializable
 
 /*
@@ -63,11 +64,23 @@ sealed class PlansAndPaymentDestination {
     @Serializable
     data object ChooseYourPlanScreen : PlansAndPaymentDestination()
 
+    /*@Serializable
+    data object ChooseYourPaymentModeScreen : PlansAndPaymentDestination()*/
+
+    /*@Serializable
+    data class ChooseYourPaymentModeScreen(
+        val selectedPlan:String,
+        val price:String
+    ) : PlansAndPaymentDestination()*/
     @Serializable
-    data object ChooseYourPaymentModeScreen : PlansAndPaymentDestination()
+    data class ChooseYourPaymentModeScreen(
+       val selectedPlan: PlanType
+    ) : PlansAndPaymentDestination()
+    /*@Serializable
+    data object BillingDetailsScreen : PlansAndPaymentDestination()*/
 
     @Serializable
-    data object BillingDetailsScreen : PlansAndPaymentDestination()
+    data class BillingDetailsScreen(val selectedPlanType:PlanType) : PlansAndPaymentDestination()
 
     @Serializable
     data object OtpScreen : PlansAndPaymentDestination()
@@ -103,6 +116,9 @@ sealed class ProfileDestination {
     @Serializable
     data class MovieDetailScreen(val upComingMovieResponse: UpComingMovieResponse):HomeDestination()
 }*/
+// Add this to your SubGraph definitions
+@Serializable
+object MovieDetailSubGraph
 @Serializable
 sealed class HomeDestination {
 

@@ -29,7 +29,10 @@ object SessionIdPersistentListSerializer:PersistentListSerializer<SessionId>(Ses
 @Serializable
 data class AppSettings(
     @Serializable(with = SessionIdPersistentListSerializer::class)
-    val sessionId: PersistentList<SessionId> = persistentListOf()
+    val sessionId: PersistentList<SessionId> = persistentListOf(),
+    val isOnboardingDone: Boolean=false,
+    val isPlanSelected: Boolean=false,
+    val isProfileCreated: Boolean=false,
 )
 
 @Serializable

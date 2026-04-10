@@ -121,7 +121,7 @@ fun IntroScreen(
     val lastPageOfViewPager = remember {
         derivedStateOf { pagerState.currentPage == list.size - 1 }
     }
-    if (lastPageOfViewPager.value) {
+    /*if (lastPageOfViewPager.value) {
 
         if (introScreenState.sessionId?.sessionId?.isNotEmpty() == true) {
 
@@ -130,7 +130,7 @@ fun IntroScreen(
             }
 
         }
-    }
+    }*/
 
     val coroutineScope = rememberCoroutineScope()
     val isDraggedState = pagerState.interactionSource.collectIsDraggedAsState()
@@ -240,7 +240,10 @@ fun IntroScreen(
                     }
 
                     ElevatedButton(
-                        onClick = { navHostController.navigate(Destination.LoginScreen) },
+                        onClick = {
+                            navHostController.navigate(Destination.LoginScreen)
+
+                                  },
                         modifier = Modifier
                             .weight(0.5f)
                             .padding(horizontal = 10.dp),

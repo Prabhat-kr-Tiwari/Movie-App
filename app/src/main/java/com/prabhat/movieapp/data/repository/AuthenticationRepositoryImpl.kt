@@ -97,5 +97,40 @@ constructor(private val movieApiService: MovieApiService,
         return appSettings.sessionId.firstOrNull()?:SessionId("")
     }
 
+    override suspend fun setOnBoardingDone() {
+        dataStore.updateData { it->
+            it.copy(isOnboardingDone = true)
+        }
+    }
+
+    override suspend fun isOnBoardingDone(): Boolean {
+        val appSettings=dataStore.data.first()
+        return appSettings.isOnboardingDone
+
+    }
+
+    override suspend fun setPlansAndPaymentDone() {
+        dataStore.updateData { it->
+            it.copy(isPlanSelected = true)
+        }
+    }
+
+    override suspend fun isPlansAndPaymentDone(): Boolean {
+        val appSettings=dataStore.data.first()
+        return appSettings.isPlanSelected
+
+    }
+
+    override suspend fun setProfileSetupDone() {
+        dataStore.updateData { it->
+            it.copy(isProfileCreated = true)
+        }
+    }
+
+    override suspend fun isProfileSetupDone(): Boolean {
+        val appSettings=dataStore.data.first()
+        return appSettings.isProfileCreated
+    }
+
 
 }

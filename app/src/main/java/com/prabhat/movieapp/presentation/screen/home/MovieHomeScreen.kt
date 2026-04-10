@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.graphics.drawable.toBitmap
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -132,7 +133,7 @@ fun MovieHomeScreen(
     systemUiController: SystemUiController,
     statusBarColor: Color,
     innerPadding: PaddingValues,
-    movieScreenViewModel: MovieScreenViewModel
+    movieScreenViewModel: MovieScreenViewModel= hiltViewModel()
 ) {
 
     val scrollState = rememberScrollState()
@@ -167,7 +168,8 @@ fun MovieHomeScreen(
         if (onUpComingMovieSelected.value) {
             val movie = movieScreenViewModel.selectedMovie.value
             if (movie != null) {
-                navHostController.navigate(HomeDestination.MovieDetailScreen)
+//                navHostController.navigate(HomeDestination.MovieDetailScreen)
+                navHostController.navigate(HomeDestination.MovieLoadingScreen)
                 onUpComingMovieSelected.value = false
             }
 

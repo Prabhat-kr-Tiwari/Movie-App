@@ -2,6 +2,7 @@ package com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.choosePay
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -47,12 +49,14 @@ import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.prabhat.movieapp.navigation.PlansAndPaymentDestination
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.ChoosePlanEvent
+import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.PlanType
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.SelectablePlanButton
 import com.prabhat.movieapp.ui.theme.MovieAppTheme
 
 
 @Composable
 fun ChoosePaymentModeScreen(
+    selectedPlanType: PlanType,
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     systemUiController: SystemUiController,
@@ -64,8 +68,12 @@ fun ChoosePaymentModeScreen(
         choosePaymentModeScreenViewModel.navigationChannel.collect { event ->
             when(event){
                 is ChoosePaymentModeNavigationEvent.NavigationNext->{
-                    navHostController.navigate(PlansAndPaymentDestination.BillingDetailsScreen)
+                    navHostController.navigate(PlansAndPaymentDestination.BillingDetailsScreen(selectedPlanType = selectedPlanType))
                     choosePaymentModeScreenViewModel.resetNavigationFlow()
+                }
+
+                ChoosePaymentModeNavigationEvent.NavigationBack -> {
+                    navHostController.popBackStack()
                 }
             }
 
@@ -126,7 +134,6 @@ fun ChoosePaymentModeScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            var isClicked by remember { mutableStateOf(false) } // State to track button click
 
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -157,124 +164,6 @@ fun ChoosePaymentModeScreen(
                 )
 
 
-               /* Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.Start)
-                        .padding(start = 20.dp, end = 20.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .fillMaxWidth()
-                    ) {
-
-                        Button(
-                            onClick = {
-                                isClicked = !isClicked // Toggle the clicked state
-
-                            },
-                            shape = RoundedCornerShape(20.dp),
-                            border = BorderStroke(
-                                1.dp,
-                                if (isClicked) Color.Transparent else Color.Red
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isClicked) Color.Red else MaterialTheme.colorScheme.surface,
-                                disabledContainerColor = if (isClicked) Color.Red else Color.Black,
-                                contentColor = Color.White,
-                                disabledContentColor = if (isClicked) Color.Black else Color.White
-                            ),
-                            elevation = ButtonDefaults.elevatedButtonElevation(
-                                defaultElevation = 20.dp,
-                                pressedElevation = 30.dp,
-                                focusedElevation = 30.dp,
-                                hoveredElevation = 30.dp,
-                                disabledElevation = 0.dp
-                            )
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxSize(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Text(
-                                    text = "Credit / Debit Card",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp, textAlign = TextAlign.Start,
-                                    color = MaterialTheme.colorScheme.onBackground
-                                )
-
-                            }
-
-                        }
-
-
-                    }
-                }*/
-
-                /*Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 30.dp, start = 20.dp, end = 20.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .fillMaxWidth()
-                    ) {
-
-                        Button(
-                            onClick = {
-                                isClicked = !isClicked // Toggle the clicked state
-
-                            },
-                            shape = RoundedCornerShape(20.dp),
-                            border = BorderStroke(
-                                1.dp,
-                                if (isClicked) Color.Transparent else Color.Red
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isClicked) Color.Red else MaterialTheme.colorScheme.surface,
-                                disabledContainerColor = if (isClicked) Color.Red else Color.Black,
-                                contentColor = Color.White,
-                                disabledContentColor = if (isClicked) Color.Black else Color.White
-                            ),
-                            elevation = ButtonDefaults.elevatedButtonElevation(
-                                defaultElevation = 20.dp,
-                                pressedElevation = 30.dp,
-                                focusedElevation = 30.dp,
-                                hoveredElevation = 30.dp,
-                                disabledElevation = 0.dp
-                            )
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxSize(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Text(
-                                    text = "Netbanking",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp, textAlign = TextAlign.Start,
-                                    color = MaterialTheme.colorScheme.onBackground
-                                )
-
-                            }
-
-                        }
-
-
-                    }
-                }*/
             }
 
 
@@ -289,10 +178,13 @@ fun ChoosePaymentModeScreen(
             ) {
 
                 Text(
-                    text = "Movies & Series $20/month",
+                    text = "${selectedPlanType.displayName} ${selectedPlanType.price}",
+//                    text = "Movie & 12",
                     color = MaterialTheme.colorScheme.onBackground
                 )
-                Text(text = "Change", color = Color.Red)
+                Text(text = "Change", color = Color.Red, modifier = modifier.clickable{
+                    choosePaymentModeScreenViewModel.onEvent(ChoosePaymentModeEvent.ChangeClicked)
+                })
             }
 
             Column(
@@ -300,13 +192,7 @@ fun ChoosePaymentModeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
             ) {
-               /* var isContinueClicked by remember { mutableStateOf(false) }
-                LaunchedEffect(isContinueClicked) {
-                    if (isContinueClicked) {
 
-                        navHostController.navigate(PlansAndPaymentDestination.BillingDetailsScreen)
-                    }
-                }*/
 
                 Box(
                     modifier = Modifier
@@ -322,7 +208,6 @@ fun ChoosePaymentModeScreen(
 
                         Button(
                             onClick = {
-//                                isContinueClicked = !isContinueClicked // Toggle the clicked state
                                 choosePaymentModeScreenViewModel.onEvent(ChoosePaymentModeEvent.ContinueClicked)
 
                             },
@@ -336,10 +221,10 @@ fun ChoosePaymentModeScreen(
                                 .fillMaxWidth()
                                 .height(56.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (state.isLoading) Color.Red else MaterialTheme.colorScheme.background,
+                                containerColor = MaterialTheme.colorScheme.surface,
                                 disabledContainerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = Color.White,
-                                disabledContentColor = Color.White
+                                contentColor = MaterialTheme.colorScheme.onSurface,          // use theme’s onSurface
+                                disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled)
                             ),
                             elevation = ButtonDefaults.elevatedButtonElevation(
                                 defaultElevation = 20.dp,
@@ -440,6 +325,7 @@ fun ChoosePaymentModeScreenPreview() {
     MovieAppTheme {
         // Preview of your screen with a placeholder statusBarColor
         ChoosePaymentModeScreen(
+            selectedPlanType = PlanType.MovieSeries,
             modifier = Modifier,
             navHostController = navController,
             systemUiController = systemUiController,

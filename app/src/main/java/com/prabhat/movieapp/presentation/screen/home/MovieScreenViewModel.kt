@@ -66,23 +66,19 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
         movieUseCase.getUpComingMovie(page=page, language = language)     .onEach { it ->
             when(it){
                 is Resource.Loading->{
-                    Log.d("ALEXA", "getUpComingMovie: loading")
                     _upcomingMovieScreenState.value=_upcomingMovieScreenState.value.copy(isLoading = true)
                 }
                 is Resource.Success->{
 //                    _upcomingMovieScreenState.value=_upcomingMovieScreenState.value.copy(data = listOf( it.data?.toUpComingMovieResponse()))
                     val upcomingMovies = it.data?.toUpComingMovieResponse()
-                    Log.d("ALEXA", "getUpComingMovie:  upcomingMovies"+upcomingMovies)
 //                    val imageUrlList = upcomingMovies?.map { it.imageUrl }
 
                     _upcomingMovieScreenState.value=_upcomingMovieScreenState.value.copy(data = upcomingMovies!!)
-                    Log.d("ALEXA", "getUpComingMovie: MovieScreenViewModel $upcomingMovies")
 
 
                 }
                 is Resource.Error->{
                     _upcomingMovieScreenState.value= it.message?.let { it1 -> _upcomingMovieScreenState.value.copy(error = it1) }!!
-                    Log.d("ALEXA", "getUpComingMovie: "+it.message.toString())
                 }
 
             }
@@ -350,12 +346,10 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
         movieUseCase.getPopularSeriesVideos(seriesId = seriesId)     .onEach { it ->
             when(it){
                 is Resource.Loading->{
-                    Log.d("JOHN", "getMovieCredits: loading")
                     _popularSeriesVideoState.value=_popularSeriesVideoState.value.copy(isLoading = true)
                 }
                 is Resource.Success->{
                     val popularSeriesVideos=it.data?.toPopularSeriesVideo()
-                    Log.d("JOHN", "getMovieCredits:  upcomingMovies"+popularSeriesVideos)
 
                     _popularSeriesVideoState.value=_popularSeriesVideoState.value.copy(isLoading = false,data = popularSeriesVideos!!)
 
@@ -363,7 +357,6 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
                 }
                 is Resource.Error->{
                     _popularSeriesVideoState.value= it.message?.let { it1 -> _popularSeriesVideoState.value.copy(error = it1) }!!
-                    Log.d("JOHN", "getMovieCredits: "+it.message.toString())
                 }
 
             }

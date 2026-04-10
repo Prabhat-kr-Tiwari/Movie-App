@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 fun LoadingScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    movieScreenViewModel: MovieScreenViewModel
+    movieScreenViewModel: MovieScreenViewModel=hiltViewModel()
 //    movieScreenViewModel: MovieScreenViewModel = hiltViewModel()
 ) {
 

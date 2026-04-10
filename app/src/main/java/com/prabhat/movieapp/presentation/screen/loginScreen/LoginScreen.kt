@@ -58,6 +58,7 @@ import com.example.movieapp.utils.CustomLoadingDialog
 import com.prabhat.movieapp.R
 import com.prabhat.movieapp.navigation.Destination
 import com.prabhat.movieapp.navigation.PlansAndPaymentDestination
+import com.prabhat.movieapp.navigation.SubGraph
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -79,10 +80,10 @@ fun LoginScreen(
 
         }*/
         LaunchedEffect(Unit) {
-            navHostController.navigate(PlansAndPaymentDestination.ChooseYourPlanScreen) /*{
-                popUpTo(Destination.LoginScreen) { inclusive = true } // This clears the LoginScreen from the backstack
-                launchSingleTop = true // Avoid multiple instances of the same screen
-            }*/
+            navHostController.navigate(PlansAndPaymentDestination.ChooseYourPlanScreen) {
+                popUpTo(SubGraph.onBoarding) { inclusive = true }
+            }
+            loginScreenViewModel.onEvent(LoginScreenEvent.onBoardingFinished)
         }
     }
     Text(text = "Login")

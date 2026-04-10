@@ -7,5 +7,7 @@ data class
 IntroScreenState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val sessionId: SessionId? = null
+    val sessionId: SessionId? = null,
+    val isOnboardingDone: Boolean = false
+
 )

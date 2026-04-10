@@ -8,12 +8,16 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imeNestedScroll
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -25,6 +29,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountBox
@@ -52,6 +57,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.SystemUiController
@@ -63,284 +70,315 @@ import com.prabhat.movieapp.ui.theme.MovieAppTheme
 
 @Composable
 fun EnterUserNameScreen(
+    innerPaddingValues: PaddingValues,
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     systemUiController: SystemUiController,
-    statusBarColor: Color
+    statusBarColor: Color,
+    enterUserNameScreenViewModel: EnterUserNameScreenViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit) {
+        enterUserNameScreenViewModel.navigationChannel.collect { event ->
+            when (event) {
+                EnterUserNameNavigationEvent.navigateBack -> {
+                    navHostController.popBackStack()
+                }
+
+                EnterUserNameNavigationEvent.navigateNext -> {
+                    navHostController.navigate(ProfileDestination.EnterPasswordNameScreen)
+
+                }
+            }
+        }
+    }
+    val state = enterUserNameScreenViewModel.uiState.collectAsStateWithLifecycle()
+    val imageResources = listOf(
+        painterResource(id = R.drawable.ellipse13),
+        painterResource(id = R.drawable.ellipse14),
+        painterResource(id = R.drawable.ellipse15),
+        painterResource(id = R.drawable.ellipse16),
+        painterResource(id = R.drawable.ellipse17),
+        painterResource(id = R.drawable.ellipse18),
+        painterResource(id = R.drawable.ellipse19),
+        painterResource(id = R.drawable.ellipse20)
+    )
+    val avatarIndex = state.value.avatarId?.toInt()
+    val painterResource = imageResources[avatarIndex ?: 0]
+
 
     Scaffold(
         modifier = modifier
 
             .background(MaterialTheme.colorScheme.surface)
+            .padding(innerPaddingValues)
+            .consumeWindowInsets(innerPaddingValues)
     ) { innerPadding ->
         Column(
-            modifier = Modifier  .background(MaterialTheme.colorScheme.surface).padding(innerPadding)
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(innerPadding)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .imePadding()
 
-              ,
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
 
-            Spacer(modifier = Modifier
-                .background(MaterialTheme.colorScheme.surface)
-                .height(10.dp))
-
             Column(
-                modifier = Modifier .background(MaterialTheme.colorScheme.surface),
+                modifier = modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Box(
+
+                Spacer(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 10.dp)
-                        .clip(RoundedCornerShape(40.dp))
-                        .height(200.dp)
-                        .background(Color.Red),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "MOVIES",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 80.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
-                Text(
-                    text = "Enter Your Username",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
+                        .background(MaterialTheme.colorScheme.surface)
+                        .height(10.dp)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
 
-
-
-
-                Box(
-                    modifier = Modifier
-
-                        .align(Alignment.CenterHorizontally)
+                Column(
+                    modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(end = 70.dp, start = 70.dp)
-                    ) {
 
-                        Image(
-                            painter = painterResource(id = R.drawable.ellipse13),
-                            contentDescription = "Profile Image",
-                            modifier = Modifier
-                                .size(140.dp)
-                        )
-
-
-                    }
-                    Text(
-                        text = "Change",
-                        color = Color.Red,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .padding()
-                            .align(Alignment.BottomEnd)
-                            .clickable {
-                                navHostController.popBackStack()
-                            }
-
-                    )
-
-                }
-
-
-                Spacer(modifier = Modifier.height(40.dp))
-
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    val userNameState = rememberTextFieldState()
-
-                    BasicTextField(
-                        state = userNameState,
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                            .clip(RoundedCornerShape(50.dp))
-                            .background(
-                                if (isSystemInDarkTheme()) {
-                                    MaterialTheme.colorScheme.onBackground
-                                } else {
-                                    MaterialTheme.colorScheme.surfaceContainerHighest
-                                }
-                            )
-                            .padding(10.dp),
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                        lineLimits = TextFieldLineLimits.SingleLine,
-                        textStyle = TextStyle(
+                            .padding(horizontal = 50.dp, vertical = 10.dp)
+                            .clip(RoundedCornerShape(40.dp))
+                            .height(120.dp)
+                            .background(Color.Red),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "MOVIES",
                             color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = 18.sp
-                        ),
-                        decorator = { innerTextField ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Spacer(
-                                    modifier = Modifier
-                                        .height(20.dp)
-                                        .padding(6.dp)
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(15.dp))
-                                        .background(MaterialTheme.colorScheme.secondaryContainer)
-                                        .clickable {}
-                                        .padding(6.dp),
-                                ) {
-
-                                    Icon(
-                                        imageVector = Icons.Rounded.AccountBox,
-                                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                                        contentDescription = null
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Box(modifier = Modifier.weight(1f)) {
-
-                                    if (userNameState.text.isEmpty()) {
-                                        Text(
-                                            text = "UserName",
-                                            color = if (isSystemInDarkTheme()) {
-                                                MaterialTheme.colorScheme.background.copy(0.5f)
-                                            } else {
-                                                MaterialTheme.colorScheme.onBackground.copy(0.5f)
-                                            }
-                                        )
-                                    }
-                                    innerTextField()
-                                }
-                                if (userNameState.text.isNotEmpty()) {
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Icon(
-                                        imageVector = Icons.Rounded.Clear,
-                                        contentDescription = null,
-                                        modifier = Modifier.clickable {
-                                            userNameState.edit {
-                                                replace(0, userNameState.text.length, "")
-                                            }
-                                        })
-                                }
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 70.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    Text(
+                        text = "Enter Your Username",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
 
 
-                            }
+
+
+                    Box(
+                        modifier = Modifier
+
+                            .align(Alignment.CenterHorizontally)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(end = 70.dp, start = 70.dp)
+                        ) {
+
+                            Image(
+//                            painter = painterResource(id = R.drawable.ellipse13),
+                                painter = painterResource,
+                                contentDescription = "Profile Image",
+                                modifier = Modifier
+                                    .size(140.dp)
+                            )
+
 
                         }
-
-                    )
-                    if (userNameState.text.isNotEmpty()) {
-
                         Text(
-                            text = "UserName is available",
-                            color = Color.Green,
-                            modifier = Modifier.padding(horizontal = 40.dp, vertical = 4.dp)
+                            text = "Change",
+                            color = Color.Red,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding()
+                                .align(Alignment.BottomEnd)
+                                .clickable {
+                                    enterUserNameScreenViewModel.onEvent(EnterUserNameEvent.changeClicked)
+                                }
+
                         )
+
                     }
-                }
-
-//            Spacer(modifier = Modifier.height(20.dp))
 
 
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+                    Spacer(modifier = Modifier.height(40.dp))
 
-                var isCallMeThisClicked by remember {
-                    mutableStateOf(false)
-                }
-                LaunchedEffect(isCallMeThisClicked) {
-                    if (isCallMeThisClicked) {
-                        navHostController.navigate(ProfileDestination.EnterPasswordNameScreen)
-                    }
-                }
+                    Column(modifier = Modifier.fillMaxWidth()) {
 
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 30.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .fillMaxWidth()
-                    ) {
-
-                        Button(
-                            onClick = {
-                                isCallMeThisClicked =
-                                    !isCallMeThisClicked // Toggle the clicked state
-
-                            },
-                            shape = RoundedCornerShape(20.dp),
-                            border = BorderStroke(
-                                1.dp,
-                                if (isCallMeThisClicked) Color.Transparent else Color.Red
-                            ),
+                        BasicTextField(
+                            state = enterUserNameScreenViewModel.userNameState,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(56.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isCallMeThisClicked) Color.Red else MaterialTheme.colorScheme.surface,
-                                disabledContainerColor = if (isCallMeThisClicked) Color.Red else Color.Black,
-                                contentColor = Color.White,
-                                disabledContentColor = if (isCallMeThisClicked) Color.Black else Color.White
-                            ),
-                            elevation = ButtonDefaults.elevatedButtonElevation(
-                                defaultElevation = 20.dp,
-                                pressedElevation = 30.dp,
-                                focusedElevation = 30.dp,
-                                hoveredElevation = 30.dp,
-                                disabledElevation = 0.dp
-                            )
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxSize(),
-                                horizontalArrangement = Arrangement.SpaceAround,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Text(
-                                    text = "Call me this",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp, textAlign = TextAlign.Start,
-                                    color = MaterialTheme.colorScheme.onBackground
-
+                                .padding(horizontal = 20.dp)
+                                .clip(RoundedCornerShape(50.dp))
+                                .background(
+                                    if (isSystemInDarkTheme()) {
+                                        MaterialTheme.colorScheme.onBackground
+                                    } else {
+                                        MaterialTheme.colorScheme.surfaceContainerHighest
+                                    }
                                 )
+                                .padding(10.dp),
+                            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                            lineLimits = TextFieldLineLimits.SingleLine,
+                            textStyle = TextStyle(
+                                color = if (isSystemInDarkTheme()) {
+                                    MaterialTheme.colorScheme.surface
+                                } else {
+                                    MaterialTheme.colorScheme.onBackground
+                                },
+                                fontSize = 18.sp
+                            ),
+                            decorator = { innerTextField ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Spacer(
+                                        modifier = Modifier
+                                            .height(20.dp)
+                                            .padding(6.dp)
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(15.dp))
+                                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                                            .clickable {}
+                                            .padding(6.dp),
+                                    ) {
+
+                                        Icon(
+                                            imageVector = Icons.Rounded.AccountBox,
+                                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                            contentDescription = null
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Box(modifier = Modifier.weight(1f)) {
+
+                                        if (enterUserNameScreenViewModel.userNameState.text.isEmpty()) {
+                                            Text(
+                                                text = "UserName",
+                                                color = if (isSystemInDarkTheme()) {
+                                                    MaterialTheme.colorScheme.background.copy(0.5f)
+                                                } else {
+                                                    MaterialTheme.colorScheme.onBackground.copy(0.5f)
+                                                }
+                                            )
+                                        }
+                                        innerTextField()
+                                    }
+                                    if (enterUserNameScreenViewModel.userNameState.text.isNotEmpty()) {
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Icon(
+                                            imageVector = Icons.Rounded.Clear,
+                                            contentDescription = null,
+                                            modifier = Modifier.clickable {
+                                                enterUserNameScreenViewModel.userNameState.edit {
+                                                    replace(
+                                                        0,
+                                                        enterUserNameScreenViewModel.userNameState.text.length,
+                                                        ""
+                                                    )
+                                                }
+                                            })
+                                    }
+
+
+                                }
 
                             }
 
+                        )
+                        if (enterUserNameScreenViewModel.userNameState.text.isNotEmpty()) {
+
+                            Text(
+                                text = "UserName is available",
+                                color = Color.Green,
+                                modifier = Modifier.padding(horizontal = 40.dp, vertical = 4.dp)
+                            )
                         }
-
-
                     }
+
+
                 }
+                Spacer(Modifier.height(20.dp))
+
+
             }
-            Spacer(modifier = Modifier.height(10.dp))
+            Button(
+                onClick = {
+
+                    enterUserNameScreenViewModel.onEvent(EnterUserNameEvent.callMeThisClicked)
+
+                },
+                enabled = enterUserNameScreenViewModel.userNameState.text.isNotEmpty(),
+                shape = RoundedCornerShape(20.dp),
+                border = BorderStroke(
+                    1.dp,
+                     Color.Red
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
+
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    disabledContainerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface,          // use theme’s onSurface
+                    disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled)
+                ),
+                elevation = ButtonDefaults.elevatedButtonElevation(
+                    defaultElevation = 20.dp,
+                    pressedElevation = 30.dp,
+                    focusedElevation = 30.dp,
+                    hoveredElevation = 30.dp,
+                    disabledElevation = 0.dp
+                )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Text(
+                        text = "Call me this",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp, textAlign = TextAlign.Start,
+                        color = MaterialTheme.colorScheme.onBackground
+
+                    )
+
+                }
+
+            }
 
         }
+    }
+}
+
+fun avatarMap(index: Int) {
+    when (index) {
+        0 -> {}
+        1 -> {}
+        2 -> {}
+        3 -> {}
+        4 -> {}
+        5 -> {}
+        6 -> {}
+        7 -> {}
     }
 }
 
@@ -352,14 +390,16 @@ fun PreviewEnterUserNameScreen() {
 
     MovieAppTheme {
         val systemUiController = rememberSystemUiController()
-        EnterUserNameScreen(modifier = Modifier,
+        EnterUserNameScreen(
+            modifier = Modifier,
             navHostController = navController,
             systemUiController = systemUiController,
-            statusBarColor = Color.Red
+            statusBarColor = Color.Red, innerPaddingValues = PaddingValues(20.dp)
         )
     }
 
 }
+
 @Preview(
     name = "Dark Mode",
     showBackground = true,

@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -48,12 +49,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.prabhat.movieapp.navigation.BottomNavigationDestination
 import com.prabhat.movieapp.navigation.PerformNavigation
+import com.prabhat.movieapp.navigation.SubGraph
 import com.prabhat.movieapp.presentation.screen.home.MovieScreenViewModel
 import com.prabhat.movieapp.presentation.screen.splashScreen.SplashScreenViewModel
 import com.prabhat.movieapp.ui.theme.Blur
@@ -77,7 +80,7 @@ class MainActivity : ComponentActivity() {
             //here you can check token is valid
 
             setKeepOnScreenCondition {
-                !splashScreenViewModel.isReady.value
+                !splashScreenViewModel.uiState.value.isReady
             }
             setOnExitAnimationListener { screen ->
                 val zoomX = ObjectAnimator.ofFloat(screen.iconView, View.SCALE_X, 0.4f, 0.0f)
@@ -97,6 +100,7 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             MovieAppTheme {
+                val splashScreenState=splashScreenViewModel.uiState.collectAsStateWithLifecycle()
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = {
@@ -108,11 +112,14 @@ class MainActivity : ComponentActivity() {
                         BottomNavigationDestination.MoreScreen.route
                     )
                     val currentDestination = navBackStackEntry?.destination?.route
-                    Log.d("FUTURE", "onCreate: currentDestination $currentDestination")
-                    Log.d(
-                        "QWERTY",
-                        "onCreate: ${BottomNavigationDestination.MovieHomeScreen.toString()}"
-                    )
+                    SideEffect{
+                        Log.d("FUTURE", "onCreate: currentDestination $currentDestination")
+                        Log.d(
+                            "QWERTY",
+                            "onCreate: ${BottomNavigationDestination.MovieHomeScreen.toString()}"
+                        )
+                    }
+
 //                    val currentDestinationName = currentDestination?.substringAfterLast(".")
                      currentDestinationName = currentDestination?.substringAfterLast(".")
 
@@ -124,7 +131,10 @@ class MainActivity : ComponentActivity() {
 
                         else -> false
                     }
-                    Log.d("FUTURE", "onCreate:shouldDisplayBottomBar $shouldDisplayBottomBar")
+                    SideEffect {
+
+                        Log.d("FUTURE", "onCreate:shouldDisplayBottomBar $shouldDisplayBottomBar")
+                    }
                     if (shouldDisplayBottomBar) {
                         MyBottomNavigation(navController = navController, shouldDisplay = true, onBackPressedDispatcher = onBackPressedDispatcher, context = this@MainActivity)
                     }
@@ -163,14 +173,21 @@ class MainActivity : ComponentActivity() {
                         error("LocalActivity is not present")
                     }
                     CompositionLocalProvider(localActivity provides this@MainActivity) {
-                        Log.e("ActivityScopedViewModel", "Hashcode: ${myViewModel.hashCode()} : Activity Scope")
+                        SideEffect {
 
-                        PerformNavigation(
-                            navHostController = navController,
-                            systemUiController = systemUi,
-                            statusBarColor = statusBarColor,
-                            innerPadding= innerPadding
-                        )
+                            Log.e("ActivityScopedViewModel", "Hashcode: ${myViewModel.hashCode()} : Activity Scope")
+                        }
+
+                        if (splashScreenState.value.isReady) {
+                            PerformNavigation(
+                                navHostController = navController,
+                                systemUiController = systemUi,
+                                statusBarColor = statusBarColor,
+                                innerPadding= innerPadding,
+                                startDestination =splashScreenState.value.startDestination
+                            )
+                        }
+
                     }
 
                 }
@@ -182,7 +199,9 @@ class MainActivity : ComponentActivity() {
                             if (backStack.isEmpty() || backStack.last() != route) {
                                 backStack.add(route)
                             }
-                            Log.d("CHUBBY", "Full BackStack: $backStack")
+
+//                                Log.d("CHUBBY", "Full BackStack: $backStack")
+
                         }
                     }
                 }
@@ -194,7 +213,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun getOnBackInvokedDispatcher(): OnBackInvokedDispatcher {
-        Log.d("PRABHAT", "getOnBackInvokedDispatcher: Back button pressed")
+//        Log.d("PRABHAT", "getOnBackInvokedDispatcher: Back button pressed")
         return super.getOnBackInvokedDispatcher()
     }
 
@@ -258,23 +277,30 @@ fun MyBottomNavigation(
         var selectedItemIndex by rememberSaveable {
             mutableIntStateOf(0)
         }
-        Log.d("PRABHAT", "MyBottomNavigation:selectedItemIndex $selectedItemIndex")
+        SideEffect {
+
+            Log.d("PRABHAT", "MyBottomNavigation:selectedItemIndex $selectedItemIndex")
+        }
         // Back press handling to go to the previous tab
 //        val context= LocalContext.current.getActivity()
         val local = context.getActivity()
         val currentDestination = navController.currentDestination?.route
         val currentDestinationName = currentDestination?.substringAfterLast(".")
-        Log.d("TOMM", "MyBottomNavigation: main "+currentDestinationName)
+        SideEffect {
+
+            Log.d("TOMM", "MyBottomNavigation: main "+currentDestinationName)
+        }
 
 
             BackHandler(enabled = true) {
 
                 if (selectedItemIndex > 0) {
-                    Log.d("PRABHAT", "Navigating to previous tab")
+
+//                    Log.d("PRABHAT", "Navigating to previous tab")
                     selectedItemIndex -= 1
                     navController.navigate(bottomItemList[selectedItemIndex].currentScreen)
                 } else {
-                    Log.d("PRABHAT", "Back pressed, closing the activity")
+//                    Log.d("PRABHAT", "Back pressed, closing the activity")
 //                onBackPressedDispatcher.onBackPressed()
 
 //                context?.finish()
@@ -328,7 +354,10 @@ fun MyBottomNavigation(
 
                         selectedItemIndex = index
                         navController.navigate(bottomNavigationItem.currentScreen) {
-                            popUpTo(navController.graph.startDestinationId) {
+                            /*popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }*/
+                            popUpTo(BottomNavigationDestination.MovieHomeScreen) {
                                 saveState = true
                             }
                             launchSingleTop = true
@@ -352,10 +381,16 @@ fun MyBottomNavigation(
                             Icon(
                                 painter = if (index == selectedItemIndex) {
 
-                                    Log.d("PRABHAT", "MyBottomNavigation: selected")
+                                    SideEffect {
+
+                                        Log.d("PRABHAT", "MyBottomNavigation: selected")
+                                    }
                                     bottomNavigationItem.selectedIcon
                                 } else {
-                                    Log.d("PRABHAT", "MyBottomNavigation: unselected")
+                                    SideEffect {
+
+                                        Log.d("PRABHAT", "MyBottomNavigation: unselected")
+                                    }
                                     bottomNavigationItem.unSelectedIcon
                                 }, contentDescription = bottomNavigationItem.title,
                                 tint = Color.Unspecified // Prevent default tint

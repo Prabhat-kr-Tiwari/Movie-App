@@ -58,6 +58,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.prabhat.movieapp.R
 import com.prabhat.movieapp.domain.model.watchList.Movie
@@ -72,7 +73,7 @@ import com.prabhat.movieapp.ui.theme.MovieAppTheme
 
 //@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MovieDownloadScreen(modifier: Modifier = Modifier,downloadScreenViewModel: DownloadScreenViewModel) {
+fun MovieDownloadScreen(modifier: Modifier = Modifier,downloadScreenViewModel: DownloadScreenViewModel= hiltViewModel()) {
     val onTvSelected = rememberSaveable { mutableStateOf(false) }
     val onMovieByCategoriesSelected = rememberSaveable { mutableStateOf(false) }
     fun getList(): List<HorizontalPagerContent> {

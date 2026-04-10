@@ -37,6 +37,12 @@ class ChoosePaymentModeScreenViewModel @Inject constructor(private val savePrefe
                 //savePrefrence
                 savePreference()
             }
+
+            ChoosePaymentModeEvent.ChangeClicked ->{
+                viewModelScope.launch {
+                    _navigationChannel.send(ChoosePaymentModeNavigationEvent.NavigationBack)
+                }
+            }
         }
 
     }

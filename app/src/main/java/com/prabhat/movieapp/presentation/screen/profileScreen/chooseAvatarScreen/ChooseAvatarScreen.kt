@@ -24,6 +24,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +48,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.SystemUiController
@@ -61,9 +65,20 @@ fun ChooseAvatarScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     systemUiController: SystemUiController,
-    statusBarColor: Color
+    statusBarColor: Color,
+    chooseAvatarScreenViewModel: ChooseAvatarScreenViewModel= hiltViewModel()
 ) {
 
+    val state =  chooseAvatarScreenViewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        chooseAvatarScreenViewModel.navigationFlow.collect { event ->
+            when (event) {
+                ChooseAvatarNavigationEvent.NavigateNext -> {
+                    navHostController.navigate(ProfileDestination.EnterUserNameScreen)
+                }
+            }
+        }
+    }
     Scaffold(
         modifier = modifier
 
@@ -126,7 +141,7 @@ fun ChooseAvatarScreen(
             val rows = 2
             val columns = 4
 
-            var selectedAvatar by remember { mutableIntStateOf(-1) }
+            var selectedAvatar by rememberSaveable { mutableIntStateOf(-1) }
 
             FlowRow(
                 modifier = Modifier
@@ -166,7 +181,9 @@ fun ChooseAvatarScreen(
                             .size(itemSize) // Size of the circular avatar
                             .clip(CircleShape) // Make it circular
                             .border(BorderStroke(1.dp, selectedColor), CircleShape)
-                            .clickable { selectedAvatar = index },
+                            .clickable {
+                                selectedAvatar = index
+                                chooseAvatarScreenViewModel.onEvent(chooseAvatarEvent = ChooseAvatarEvent.AvatarSelected(selectedAvatar.toString())) },
                         contentAlignment = Alignment.Center // Center the image inside the box
                     ) {
                         Image(
@@ -210,22 +227,23 @@ fun ChooseAvatarScreen(
 
                         Button(
                             onClick = {
-                                islooksGoodClicked = !islooksGoodClicked // Toggle the clicked state
+                                chooseAvatarScreenViewModel.onEvent(chooseAvatarEvent = ChooseAvatarEvent.ContinueClicked)
 
                             },
+                            enabled = selectedAvatar!=-1,
                             shape = RoundedCornerShape(20.dp),
                             border = BorderStroke(
                                 1.dp,
-                                if (islooksGoodClicked) Color.Transparent else Color.Red
+                                Color.Red
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (islooksGoodClicked) Color.Red else MaterialTheme.colorScheme.surface,
-                                disabledContainerColor = if (islooksGoodClicked) Color.Red else Color.Black,
-                                contentColor = Color.White,
-                                disabledContentColor = if (islooksGoodClicked) Color.Black else Color.White
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                disabledContainerColor = MaterialTheme.colorScheme.surface,
+                                contentColor = MaterialTheme.colorScheme.onSurface,          // use theme’s onSurface
+                                disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled)
                             ),
                             elevation = ButtonDefaults.elevatedButtonElevation(
                                 defaultElevation = 20.dp,

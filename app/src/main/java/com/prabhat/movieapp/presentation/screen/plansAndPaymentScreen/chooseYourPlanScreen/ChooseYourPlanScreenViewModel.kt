@@ -31,19 +31,19 @@ class ChooseYourPlanScreenViewModel
     fun onEvent(event: ChoosePlanEvent) {
         when (event) {
             is ChoosePlanEvent.ContinueClicked -> {
-                if (_uiState.value.selectedPlan.isEmpty()) return
+                if (_uiState.value.selectedPlan==null) return
                 savePreference()
             }
 
             is ChoosePlanEvent.PlanSelected -> {
-                _uiState.update { it.copy(selectedPlan = event.plan) }
+                _uiState.update { it.copy(selectedPlan = event.planType) }
             }
 
         }
     }
 
     private fun savePreference() {
-        savePreferenceUseCase(field = "plans", value = _uiState.value.selectedPlan)
+        savePreferenceUseCase(field = "plans", value = _uiState.value.selectedPlan?.displayName?:" ")
             .onEach { result ->
                 when (result) {
 

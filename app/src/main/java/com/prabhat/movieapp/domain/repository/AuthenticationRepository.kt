@@ -19,5 +19,13 @@ interface AuthenticationRepository {
 suspend fun saveSessionId(sessionId: SessionId)
     suspend fun getSessionId():SessionId
     suspend fun clearSessionId():SessionId
+    suspend fun setOnBoardingDone()
+    suspend fun isOnBoardingDone(): Boolean
+
+    suspend fun setPlansAndPaymentDone()
+    suspend fun isPlansAndPaymentDone(): Boolean
+
+    suspend fun setProfileSetupDone()
+    suspend fun isProfileSetupDone(): Boolean
 
 }

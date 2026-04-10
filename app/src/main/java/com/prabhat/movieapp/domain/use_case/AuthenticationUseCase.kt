@@ -101,13 +101,46 @@ class AuthenticationUseCase @Inject constructor(private val authenticationReposi
 
     }.onStart { emit(Resource.Loading()) }.catch { emit(Resource.Error("Error")) }
 
-    fun clearSessionId():Flow<Resource<SessionId>> = flow {
+    fun clearSessionId(): Flow<Resource<SessionId>> = flow {
 
-        val sessionId=authenticationRepository.clearSessionId()
-        if (sessionId.sessionId.isEmpty()){
+        val sessionId = authenticationRepository.clearSessionId()
+        if (sessionId.sessionId.isEmpty()) {
             emit(Resource.Success(SessionId(sessionId = sessionId.toString())))
-        }else{
+        } else {
             emit(Resource.Error("Error"))
         }
     }.onStart { emit(Resource.Loading()) }.catch { emit(Resource.Error("Error")) }
+
+    suspend fun setOnBoardingDone() {
+        authenticationRepository.setOnBoardingDone()
+    }
+    /*fun isOnBoardingDone(): Flow<Resource<Boolean>> = flow<Resource<Boolean>> {
+        val isOnBoardingDone = authenticationRepository.isOnBoardingDone()
+        Log.d("PRABHU", "isOnBoardingDone: $isOnBoardingDone")
+        emit(Resource.Success(isOnBoardingDone))
+    }.onStart { emit(Resource.Loading()) }.catch { emit(Resource.Error("Error")) }*/
+
+    suspend fun isOnBoardingDone(): Boolean {
+        val isOnBoardingDone = authenticationRepository.isOnBoardingDone()
+        return isOnBoardingDone
+    }
+
+    suspend fun setPlansAndPaymentDone() {
+        authenticationRepository.setPlansAndPaymentDone()
+    }
+
+    suspend fun isPlansAndPaymentDone(): Boolean {
+        val isPlansAndPaymentDone = authenticationRepository.isPlansAndPaymentDone()
+        return isPlansAndPaymentDone
+    }
+
+    suspend fun setProfileSetupDone() {
+        authenticationRepository.setProfileSetupDone()
+    }
+
+    suspend fun isProfileSetupDone(): Boolean {
+        val isProfileSetupDone = authenticationRepository.isProfileSetupDone()
+        return isProfileSetupDone
+    }
+
 }

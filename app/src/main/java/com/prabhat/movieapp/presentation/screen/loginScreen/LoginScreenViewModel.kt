@@ -4,10 +4,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prabhat.movieapp.domain.use_case.AuthenticationUseCase
+import com.prabhat.movieapp.presentation.screen.introScreen.IntroScreenEvent
 import com.prabhat.movieapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,6 +42,18 @@ class LoginScreenViewModel
 
     }
 
+    fun onEvent(loginScreenEvent: LoginScreenEvent){
+        when(loginScreenEvent){
+            LoginScreenEvent.onBoardingFinished -> {
+                setOnBoardingDone()
+            }
+        }
+    }
+    private fun setOnBoardingDone(){
+        viewModelScope.launch {
+            authenticationUseCase.setOnBoardingDone()
+        }
+    }
 
 }
 

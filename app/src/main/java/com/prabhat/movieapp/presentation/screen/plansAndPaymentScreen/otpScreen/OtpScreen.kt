@@ -4,43 +4,44 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
+
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
+
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Clear
+
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ContentAlpha
+
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +49,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -69,56 +69,70 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.prabhat.movieapp.navigation.PlansAndPaymentDestination
-import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.billingDetailsScreen.BillingDetailsScreen
 import com.prabhat.movieapp.ui.theme.MovieAppTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun OtpScreen(modifier: Modifier = Modifier, navHostController: NavHostController, systemUiController: SystemUiController, statusBarColor: Color) {
+fun OtpScreen(
+    innerPaddingValues: PaddingValues,
+    modifier: Modifier = Modifier,
+    navHostController: NavHostController,
+    systemUiController: SystemUiController,
+    statusBarColor: Color
+) {
     systemUiController.setStatusBarColor(color = statusBarColor)
-
+    var isOtpComplete  by rememberSaveable { mutableStateOf(false) }
     Scaffold(
         modifier = modifier
-
             .background(MaterialTheme.colorScheme.surface)
+            .padding(innerPaddingValues)
     ) { innerPadding ->
         Column(
-            modifier = modifier   .background(MaterialTheme.colorScheme.surface)
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(innerPadding)
                 .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.safeDrawing)
-             , verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .imePadding()
+
         ) {
 
 
+            Column(
+                modifier = modifier
+                    .weight(1f)
 
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(color = MaterialTheme.colorScheme.surface)
-            )
-
-
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 50.dp, vertical = 10.dp)
-                    .clip(RoundedCornerShape(40.dp))
-                    .height(120.dp)
-                    .background(Color.Red),
-                contentAlignment = Alignment.Center
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "MOVIES",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 70.sp,
-                    textAlign = TextAlign.Center
+
+
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(color = MaterialTheme.colorScheme.surface)
                 )
-            }
+
+
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 50.dp, vertical = 10.dp)
+                        .clip(RoundedCornerShape(40.dp))
+                        .height(120.dp)
+                        .background(Color.Red),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "MOVIES",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 70.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
                 Text(
                     text = "Enter your OTP",
                     color = MaterialTheme.colorScheme.onBackground,
@@ -126,9 +140,11 @@ fun OtpScreen(modifier: Modifier = Modifier, navHostController: NavHostControlle
                     textAlign = TextAlign.Center,
                     fontSize = 22.sp
                 )
-                Spacer(modifier = Modifier
-                    .height(10.dp)
-                    .background(color = MaterialTheme.colorScheme.surface))
+                Spacer(
+                    modifier = Modifier
+                        .height(10.dp)
+                        .background(color = MaterialTheme.colorScheme.surface)
+                )
                 Text(
                     text = "Please enter the OTP that we've sent on  your phone number 55XXXXXXX89 linked with your bank account",
                     color = MaterialTheme.colorScheme.onBackground,
@@ -139,371 +155,87 @@ fun OtpScreen(modifier: Modifier = Modifier, navHostController: NavHostControlle
 
 
 
-            var isClicked by remember { mutableStateOf(false) } // State to track button click
-
-      /*      Row(
-                horizontalArrangement = Arrangement.SpaceEvenly
-                , verticalAlignment = Alignment.CenterVertically
-                , modifier = Modifier.fillMaxWidth()
-            ) {
 
 
-                Row ( horizontalArrangement = Arrangement.SpaceEvenly
-                    , verticalAlignment = Alignment.CenterVertically
-                    , modifier = Modifier
-                        .height(80.dp)
-                        .width(100.dp)){
-
-                    val otp1State = rememberTextFieldState()
-
-                    BasicTextField(
-                        state = otp1State,
-                        modifier = Modifier
-
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                            .clip(RoundedCornerShape(50.dp))
-                            .background(  if (isSystemInDarkTheme()){
-                                MaterialTheme.colorScheme.onBackground
-                            }else{
-                                MaterialTheme.colorScheme.surfaceContainer
-                            })
-                            .padding(10.dp),
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                        lineLimits = TextFieldLineLimits.SingleLine,
-                        textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp),
-                        decorator = { innerTextField ->
-                            Row(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-
-
-                                Box(modifier = Modifier.weight(1f)) {
-
-                                    if (otp1State.text.isEmpty()) {
-                                        androidx.compose.material3.Text(
-                                            text = "",
-                                            color = if (isSystemInDarkTheme()) {
-                                                MaterialTheme.colorScheme.background.copy(0.5f)
-                                            } else {
-                                                MaterialTheme.colorScheme.onBackground.copy(0.5f)
-                                            }
-                                        )
-                                    }
-                                    innerTextField()
-                                }
-                                if (otp1State.text.isNotEmpty()) {
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Icon(
-                                        imageVector = Icons.Rounded.Clear,
-                                        contentDescription = null,
-                                        modifier = Modifier.clickable {
-                                            otp1State.edit {
-                                                replace(0, otp1State.text.length, "")
-                                            }
-                                        })
-                                }
-
-
-                            }
-
-                        }
-
-                    )
+                OtpInputRow(){
+                    isOtpComplete=it
+                    Log.d("BRAVO", "OtpScreen: complete $it")
 
                 }
 
-                Row( horizontalArrangement = Arrangement.SpaceEvenly
-                    , verticalAlignment = Alignment.CenterVertically
-                    , modifier = Modifier
-                        .height(80.dp)
-                        .width(100.dp)) {
 
 
-                    val otp2IdState = rememberTextFieldState()
-
-                    BasicTextField(
-                        state = otp2IdState,
-                        modifier = Modifier
-
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                            .clip(RoundedCornerShape(50.dp))
-                            .background(  if (isSystemInDarkTheme()){
-                                MaterialTheme.colorScheme.onBackground
-                            }else{
-                                MaterialTheme.colorScheme.surfaceContainer
-                            })
-                            .padding(10.dp),
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                        lineLimits = TextFieldLineLimits.SingleLine,
-                        textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp),
-                        decorator = { innerTextField ->
-                            Row(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-
-
-                                Box(modifier = Modifier.weight(1f)) {
-
-                                    if (otp2IdState.text.isEmpty()) {
-                                        androidx.compose.material3.Text(
-                                            text = "",
-                                            color = if (isSystemInDarkTheme()) {
-                                                MaterialTheme.colorScheme.background.copy(0.5f)
-                                            } else {
-                                                MaterialTheme.colorScheme.onBackground.copy(0.5f)
-                                            }
-                                        )
-                                    }
-                                    innerTextField()
-                                }
-                                if (otp2IdState.text.isNotEmpty()) {
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Icon(
-                                        imageVector = Icons.Rounded.Clear,
-                                        contentDescription = null,
-                                        modifier = Modifier.clickable {
-                                            otp2IdState.edit {
-                                                replace(0, otp2IdState.text.length, "")
-                                            }
-                                        })
-                                }
-
-
-                            }
-
-                        }
-
-                    )
-                }
-
-                Row( horizontalArrangement = Arrangement.SpaceEvenly
-                    , verticalAlignment = Alignment.CenterVertically
-                    , modifier = Modifier
-                        .height(80.dp)
-                        .width(100.dp)) {
-
-
-                    val otp3IdState = rememberTextFieldState()
-
-                    BasicTextField(
-                        state = otp3IdState,
-                        modifier = Modifier
-
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                            .clip(RoundedCornerShape(50.dp))
-                            .background(  if (isSystemInDarkTheme()){
-                                MaterialTheme.colorScheme.onBackground
-                            }else{
-                                MaterialTheme.colorScheme.surfaceContainer
-                            })
-                            .padding(10.dp),
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                        lineLimits = TextFieldLineLimits.SingleLine,
-                        textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp),
-                        decorator = { innerTextField ->
-                            Row(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-
-
-                                Box(modifier = Modifier.weight(1f)) {
-
-                                    if (otp3IdState.text.isEmpty()) {
-                                        androidx.compose.material3.Text(
-                                            text = "",
-                                            color = if (isSystemInDarkTheme()) {
-                                                MaterialTheme.colorScheme.background.copy(0.5f)
-                                            } else {
-                                                MaterialTheme.colorScheme.onBackground.copy(0.5f)
-                                            }
-                                        )
-                                    }
-                                    innerTextField()
-                                }
-                                if (otp3IdState.text.isNotEmpty()) {
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Icon(
-                                        imageVector = Icons.Rounded.Clear,
-                                        contentDescription = null,
-                                        modifier = Modifier.clickable {
-                                            otp3IdState.edit {
-                                                replace(0, otp3IdState.text.length, "")
-                                            }
-                                        })
-                                }
-
-
-                            }
-
-                        }
-
-                    )
-                }
-                Row( horizontalArrangement = Arrangement.SpaceEvenly
-                    , verticalAlignment = Alignment.CenterVertically
-                    , modifier = Modifier
-                        .height(80.dp)
-                        .width(100.dp)) {
-
-
-                    val otp4IdState = rememberTextFieldState()
-
-                    BasicTextField(
-                        state = otp4IdState,
-                        modifier = Modifier
-
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                            .clip(RoundedCornerShape(50.dp))
-                            .background(  if (isSystemInDarkTheme()){
-                                MaterialTheme.colorScheme.onBackground
-                            }else{
-                                MaterialTheme.colorScheme.surfaceContainer
-                            })
-                            .padding(10.dp),
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                        lineLimits = TextFieldLineLimits.SingleLine,
-                        textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp),
-                        decorator = { innerTextField ->
-                            Row(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-
-
-                                Box(modifier = Modifier.weight(1f)) {
-
-                                    if (otp4IdState.text.isEmpty()) {
-                                        androidx.compose.material3.Text(
-                                            text = "",
-                                            color = if (isSystemInDarkTheme()) {
-                                                MaterialTheme.colorScheme.background.copy(0.5f)
-                                            } else {
-                                                MaterialTheme.colorScheme.onBackground.copy(0.5f)
-                                            }
-                                        )
-                                    }
-                                    innerTextField()
-                                }
-                                if (otp4IdState.text.isNotEmpty()) {
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Icon(
-                                        imageVector = Icons.Rounded.Clear,
-                                        contentDescription = null,
-                                        modifier = Modifier.clickable {
-                                            otp4IdState.edit {
-                                                replace(0, otp4IdState.text.length, "")
-                                            }
-                                        })
-                                }
-
-
-                            }
-
-                        }
-
-                    )
-                }
-
-
-
-
-            }*/
-            OtpInputRow()
-
-
-
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-
-                Text(text = "Didn't receive the OTP?", color = Color.Red)
-
-            }
-            Column(modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Bottom) {
-                var isContinueClicked by remember {mutableStateOf(false)}
-
-                LaunchedEffect(isContinueClicked) {
-                    if(isContinueClicked){
-                        navHostController.navigate(PlansAndPaymentDestination.VerifyPaymentScreen)
-                    }
-                }
-
-                Box(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 30.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
-                    contentAlignment = Alignment.BottomCenter
+                        .padding(top = 20.dp), horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .fillMaxWidth()
-                    ) {
 
-                        Button(
-                            onClick = {
-                                isContinueClicked = !isContinueClicked // Toggle the clicked state
+                    Text(text = "Didn't receive the OTP?", color = Color.Red)
 
-                            },
-                            shape = RoundedCornerShape(20.dp),
-                            border = BorderStroke(1.dp, if (isContinueClicked) Color.Transparent else Color.Red),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isContinueClicked) Color.Red else MaterialTheme.colorScheme.surface,
-                                disabledContainerColor = if (isContinueClicked) Color.Red else Color.Black,
-                                contentColor = Color.White,
-                                disabledContentColor = if (isContinueClicked) Color.Black else Color.White
-                            ),
-                            elevation = ButtonDefaults.elevatedButtonElevation(
-                                defaultElevation = 20.dp,
-                                pressedElevation = 30.dp,
-                                focusedElevation = 30.dp,
-                                hoveredElevation = 30.dp,
-                                disabledElevation = 0.dp
-                            )
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxSize(),
-                                horizontalArrangement = Arrangement.SpaceAround,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Text(
-                                    text = "Continue",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp, textAlign = TextAlign.Start,
-                                            color = MaterialTheme.colorScheme.onBackground
-                                )
-
-                            }
-
-                        }
+                }
 
 
-                    }
+
+            }
+            var isContinueClicked by remember { mutableStateOf(false) }
+
+            LaunchedEffect(isContinueClicked) {
+                if (isContinueClicked&&isOtpComplete) {
+                    navHostController.navigate(PlansAndPaymentDestination.VerifyPaymentScreen)
                 }
             }
+            Button(
+                onClick = {
+//                    isContinueClicked = !isContinueClicked // Toggle the clicked state
+                    isContinueClicked = true
 
+                },
+                enabled = isOtpComplete,
+                shape = RoundedCornerShape(20.dp),
+                border = BorderStroke(
+                    1.dp,
+                    Color.Red
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    disabledContainerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface,          // use theme’s onSurface
+                    disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled)
+                ),
+                elevation = ButtonDefaults.elevatedButtonElevation(
+                    defaultElevation = 20.dp,
+                    pressedElevation = 30.dp,
+                    focusedElevation = 30.dp,
+                    hoveredElevation = 30.dp,
+                    disabledElevation = 0.dp
+                )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
+                    Text(
+                        text = "Continue",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp, textAlign = TextAlign.Start,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+
+                }
+
+            }
         }
     }
 
 }
+
 @ThemeAnnotation
 @Composable
 fun OtpScreenPreview() {
@@ -513,9 +245,10 @@ fun OtpScreenPreview() {
     // Mock SystemUiController (You might need to provide a proper implementation or mock)
     val systemUiController = rememberSystemUiController()
 
-    MovieAppTheme{
+    MovieAppTheme {
         // Preview of your screen with a placeholder statusBarColor
         OtpScreen(
+            innerPaddingValues = PaddingValues(20.dp),
             modifier = Modifier,
             navHostController = navController,
             systemUiController = systemUiController,
@@ -670,7 +403,7 @@ fun OtpTextField(
             )
             .padding(10.dp)
             .onKeyEvent { event ->
-                if(event.key == Key.Backspace){
+                if (event.key == Key.Backspace) {
 
                     Log.d("BRAVO", "OtpTextField: Backspace")
                 }
@@ -714,13 +447,22 @@ fun OtpTextField(
     )
 }
 
-@Preview
+
 @Composable
-fun OtpInputRow() {
-    val otpValues = remember { List(4) { mutableStateOf(TextFieldValue("")) } }
+fun OtpInputRow(onOtpComplete:(Boolean)->Unit) {
+    val otpValues = rememberSaveable { List(4) { mutableStateOf(TextFieldValue("")) } }
     val focusRequesters = remember { List(4) { FocusRequester() } }
     val coroutineScope = rememberCoroutineScope()
 
+    val isOtpComplete by remember {
+        derivedStateOf {
+            otpValues.all { it.value.text.length==1 }
+        }
+    }
+    LaunchedEffect(isOtpComplete) {
+            onOtpComplete(isOtpComplete)
+
+    }
     LaunchedEffect(Unit) {
         focusRequesters[0].requestFocus()
     }
@@ -735,6 +477,12 @@ fun OtpInputRow() {
         otpValues.forEachIndexed { index, state ->
             val next = focusRequesters.getOrNull(index + 1)
             val previous = focusRequesters.getOrNull(index - 1)
+            if (otpValues[3].value.text.isNotEmpty()){
+                Log.d("BRAVO", "OtpInputRow: "+index)
+                if(index==3){
+                    Log.d("BRAVO", "OtpInputRow: last ")
+                }
+            }
 
             OtpTextField(
                 value = state.value,
@@ -744,7 +492,7 @@ fun OtpInputRow() {
                 previousFocusRequester = previous,
                 onBackspace = {
                     if (index > 0) {
-                        Log.d("BRAVO", "OtpInputRow: "+index)
+                        Log.d("BRAVO", "OtpInputRow: " + index)
                         // Use LaunchedEffect approach for better timing control
                         coroutineScope.launch {
                             // First, request focus to previous field
@@ -759,7 +507,6 @@ fun OtpInputRow() {
         }
     }
 }
-
 
 
 @Preview(

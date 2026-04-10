@@ -2,4 +2,5 @@ package com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.choosePay
 
 sealed  class ChoosePaymentModeNavigationEvent {
     object NavigationNext: ChoosePaymentModeNavigationEvent()
+    object NavigationBack: ChoosePaymentModeNavigationEvent()
 }

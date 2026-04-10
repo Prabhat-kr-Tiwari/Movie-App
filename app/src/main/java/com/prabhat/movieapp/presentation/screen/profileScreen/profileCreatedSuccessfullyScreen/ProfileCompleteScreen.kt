@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -38,24 +39,45 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.prabhat.movieapp.R
 import com.prabhat.movieapp.navigation.BottomNavigationDestination
+import com.prabhat.movieapp.navigation.SubGraph
 import com.prabhat.movieapp.ui.theme.MovieAppTheme
+import java.util.Locale
+import java.util.Locale.getDefault
 
 @Composable
 fun ProfileCompleteScreen(
+    innerPaddingValues: PaddingValues,
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     systemUiController: SystemUiController,
-    statusBarColor: Color
+    statusBarColor: Color,
+    profileCompleteScreenViewModel: ProfileCompleteScreenViewModel= hiltViewModel()
 ) {
+    val uiState= profileCompleteScreenViewModel.uiState.collectAsStateWithLifecycle()
+    val imageResources = listOf(
+        painterResource(id = R.drawable.ellipse13),
+        painterResource(id = R.drawable.ellipse14),
+        painterResource(id = R.drawable.ellipse15),
+        painterResource(id = R.drawable.ellipse16),
+        painterResource(id = R.drawable.ellipse17),
+        painterResource(id = R.drawable.ellipse18),
+        painterResource(id = R.drawable.ellipse19),
+        painterResource(id = R.drawable.ellipse20)
+    )
+    val avatarIndex = uiState.value.avatarId?.toInt()
+    val painterResource = imageResources[avatarIndex ?: 0]
 
     Scaffold(
         modifier = modifier
@@ -90,9 +112,9 @@ fun ProfileCompleteScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                        .padding(horizontal = 50.dp, vertical = 10.dp)
                         .clip(RoundedCornerShape(40.dp))
-                        .height(200.dp)
+                        .height(120.dp)
                         .background(Color.Red),
                     contentAlignment = Alignment.Center
                 ) {
@@ -100,7 +122,7 @@ fun ProfileCompleteScreen(
                         text = "MOVIES",
                         color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 80.sp,
+                        fontSize = 70.sp,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -130,7 +152,7 @@ fun ProfileCompleteScreen(
                     )
 
                     Image(
-                        painter = painterResource(id = R.drawable.ellipse13),
+                        painter = painterResource,
                         contentDescription = "Profile Image",
                         modifier = Modifier
                             .size(160.dp).align(Alignment.Center)
@@ -145,7 +167,7 @@ fun ProfileCompleteScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = "UIUXDIVYANSHU",
+                    text = uiState.value.userName.toString().uppercase(getDefault()),
                     color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
@@ -166,7 +188,10 @@ fun ProfileCompleteScreen(
                 }
                 LaunchedEffect(isIAmSafeAllNowClicked) {
                     if (isIAmSafeAllNowClicked) {
-                        navHostController.navigate(BottomNavigationDestination.MovieHomeScreen)
+                        navHostController.navigate(BottomNavigationDestination.MovieHomeScreen){
+                            popUpTo(SubGraph.Profile) { inclusive=true }
+                        }
+                        profileCompleteScreenViewModel.onEvent(ProfileCreatedEvent.onProfileCreatedDone)
                     }
                 }
 
@@ -251,6 +276,7 @@ fun PreviewProfileCompleteScreen(modifier: Modifier = Modifier) {
         // Mock SystemUiController (You might need to provide a proper implementation or mock)
         val systemUiController = rememberSystemUiController()
         ProfileCompleteScreen(
+            innerPaddingValues=PaddingValues(20.dp),
             navHostController = navController,
             systemUiController = systemUiController,
             statusBarColor = Color.Red

@@ -1,6 +1,5 @@
 package com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +17,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +45,7 @@ import com.prabhat.movieapp.data.local.userPrefrence.UserPreferenceEntity
 import com.prabhat.movieapp.domain.repository.userPreference.UserPreferenceRepository
 import com.prabhat.movieapp.domain.use_case.userPreference.SavePreferenceUseCase
 import com.prabhat.movieapp.navigation.PlansAndPaymentDestination
+import com.prabhat.movieapp.navigation.PlansAndPaymentDestination.*
 import com.prabhat.movieapp.ui.theme.MovieAppTheme
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 
@@ -61,23 +62,18 @@ fun ChooseYourPlanScreen(
     val state by chooseYourPlanScreenViewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        Log.d("PRABHAT", "ChooseYourPlanScreen:   LaunchedEffect(Unit)")
         chooseYourPlanScreenViewModel.navigationFlow.collect { event ->
-            Log.d(
-                "PRABHAT",
-                "ChooseYourPlanScreen:   chooseYourPlanScreenViewModel.navigationFlow.collect"
-            )
 
             when (event) {
 
                 ChoosePlanNavigationEvent.NavigateNext -> {
-                    Log.d(
-                        "PRABHAT",
-                        "ChooseYourPlanScreen:      ChoosePlanNavigationEvent.NavigateNext "
-                    )
 
                     navHostController.navigate(
-                        PlansAndPaymentDestination.ChooseYourPaymentModeScreen
+                        PlansAndPaymentDestination.
+                        ChooseYourPaymentModeScreen(
+                            selectedPlan = state.selectedPlan!!
+                        )
+//                        PlansAndPaymentDestination.ChooseYourPaymentModeScreen
                     )
                     chooseYourPlanScreenViewModel.resetNavigationFlag()
                 }
@@ -163,34 +159,37 @@ fun ChooseYourPlanScreen(
 
                     // Movies & Series
                     SelectablePlanButton(
-                        title = "Movies & Series",
-                        price = "$20/month",
-                        isSelected = state.selectedPlan == "movies_series",
+                        title = PlanType.MovieSeries.displayName,
+                        price = PlanType.MovieSeries.price,
+                        isSelected = state.selectedPlan == PlanType.MovieSeries,
                         onClick = {
                             chooseYourPlanScreenViewModel.onEvent(
-                                ChoosePlanEvent.PlanSelected("movies_series")
+                                ChoosePlanEvent.PlanSelected(PlanType.MovieSeries)
                             )
                         }
                     )
 
                     // Movies
                     SelectablePlanButton(
-                        title = "Movies",
-                        price = "$15/month",
-                        isSelected = state.selectedPlan == "movies",
+                        title = PlanType.Movies.displayName,
+                        price = PlanType.Movies.price,
+                        isSelected = state.selectedPlan == PlanType.Movies, // ✅ works now
                         onClick = {
-                            chooseYourPlanScreenViewModel.onEvent(ChoosePlanEvent.PlanSelected("movies"))
+                            chooseYourPlanScreenViewModel.onEvent(
+                                ChoosePlanEvent.PlanSelected(PlanType.Movies)
+                            )
                         }
                     )
 
                     // Series
                     SelectablePlanButton(
-                        title = "Series",
-                        price = "$15/month",
-                        isSelected = state.selectedPlan == "series",
+                        title = PlanType.Series.displayName,
+                        price = PlanType.Series.price,
+                        isSelected = state.selectedPlan == PlanType.Series,
                         onClick = {
 
-                            chooseYourPlanScreenViewModel.onEvent(ChoosePlanEvent.PlanSelected("series"))
+                            chooseYourPlanScreenViewModel.onEvent(ChoosePlanEvent.PlanSelected(
+                                PlanType.Series))
                         }
                     )
                 }
@@ -213,26 +212,25 @@ fun ChooseYourPlanScreen(
 
                         Button(
                             onClick = {
-                                Log.d("PRABHAT", "ChooseYourPlanScreen:onClick ")
                                 chooseYourPlanScreenViewModel.onEvent(
                                     ChoosePlanEvent.ContinueClicked
                                 )
 
                             },
-                            enabled = state.selectedPlan.isNotEmpty() && !state.isLoading,
+                            enabled = state.selectedPlan!=null && !state.isLoading,
                             shape = RoundedCornerShape(20.dp),
                             border = BorderStroke(
                                 1.dp,
-                                if (state.isLoading) Color.Transparent else Color.Red
+                                 Color.Red
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (state.isLoading) Color.Red else MaterialTheme.colorScheme.background,
+                                containerColor = MaterialTheme.colorScheme.surface,
                                 disabledContainerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = Color.White,
-                                disabledContentColor = Color.White
+                                contentColor = MaterialTheme.colorScheme.onSurface,          // use theme’s onSurface
+                                disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled)
                             ),
                             elevation = ButtonDefaults.elevatedButtonElevation(
                                 defaultElevation = 20.dp,

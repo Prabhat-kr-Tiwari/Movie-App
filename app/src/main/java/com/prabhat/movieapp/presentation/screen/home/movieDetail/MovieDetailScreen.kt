@@ -65,6 +65,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -129,7 +130,7 @@ fun MovieDetailScreen(
     systemUiController: SystemUiController,
     statusBarColor: Color,
     innerPadding: PaddingValues,
-    movieScreenViewModel: MovieScreenViewModel,
+    movieScreenViewModel: MovieScreenViewModel= hiltViewModel(),
     navHostController: NavHostController,
 ) {
 

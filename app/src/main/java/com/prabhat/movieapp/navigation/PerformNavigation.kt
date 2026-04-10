@@ -7,18 +7,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.toRoute
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.prabhat.movieapp.presentation.screen.categories.MovieCategoriesScreen
-import com.prabhat.movieapp.presentation.screen.downloads.DownloadScreenViewModel
 import com.prabhat.movieapp.presentation.screen.downloads.MovieDownloadScreen
 import com.prabhat.movieapp.presentation.screen.home.MovieHomeScreen
-import com.prabhat.movieapp.presentation.screen.home.MovieScreenViewModel
 import com.prabhat.movieapp.presentation.screen.home.movieDetail.LoadingScreen
 import com.prabhat.movieapp.presentation.screen.home.movieDetail.MovieDetailScreen
 import com.prabhat.movieapp.presentation.screen.introScreen.IntroScreen
@@ -26,13 +24,12 @@ import com.prabhat.movieapp.presentation.screen.loginScreen.LoginScreen
 import com.prabhat.movieapp.presentation.screen.more.MoreScreen
 import com.prabhat.movieapp.presentation.screen.more.accountScreen.accountScreenRoot
 import com.prabhat.movieapp.presentation.screen.more.accountScreen.navigateToAccountScreen
-import com.prabhat.movieapp.presentation.screen.more.moreScreen
 import com.prabhat.movieapp.presentation.screen.more.settingsScreen.navigateToSettingScreen
 import com.prabhat.movieapp.presentation.screen.more.settingsScreen.settingScreenRoot
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.billingDetailsScreen.BillingDetailsScreen
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.choosePaymentModeScreen.ChoosePaymentModeScreen
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.ChooseYourPlanScreen
-import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.ChooseYourPlanScreenViewModel
+import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.PlanType
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.otpScreen.OtpScreen
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.verifyPaymentScreen.VerifyPaymentScreen
 import com.prabhat.movieapp.presentation.screen.profileScreen.chooseAvatarScreen.ChooseAvatarScreen
@@ -43,32 +40,36 @@ import com.prabhat.movieapp.presentation.screen.profileScreen.profileCreatedSucc
 import com.prabhat.movieapp.presentation.screen.signUpScreen.SignUpScreen
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
-import kotlin.reflect.KClass
+import kotlin.reflect.typeOf
 
 class CustomNavType<T : Parcelable>(
-    private val clazz: KClass<T>,
-    private val serializer: KSerializer<T>
-) : NavType<T>(false) {
+    private val clazz: Class<T>,
+    private val serializer:KSerializer<T>
+) : NavType<T?>(isNullableAllowed = true){
+
+    companion object{
+        const val NULL = "null"
+    }
+
     override fun get(bundle: Bundle, key: String): T? {
-
-        return if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
-            bundle.getParcelable(key, clazz.java)
-        } else {
-
+        return if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.TIRAMISU){
+            bundle.getParcelable(key,clazz)
+        }else{
             bundle.getParcelable(key)
         }
+
     }
 
-    override fun parseValue(value: String): T {
-        return Json.decodeFromString(serializer, value)
+    override fun parseValue(value: String): T? {
+        return if(value==NULL) null else Json.decodeFromString(serializer,value)
     }
 
-    override fun put(bundle: Bundle, key: String, value: T) {
-        bundle.putParcelable(key, value)
+    override fun put(bundle: Bundle, key: String, value: T?) {
+        bundle.putParcelable(key,value)
     }
 
-    override fun serializeAsValue(value: T): String {
-        return Json.encodeToString(serializer, value)
+    override fun serializeAsValue(value: T?): String {
+        return value?.let { Json.encodeToString(serializer,it) }?:NULL
     }
 
 
@@ -81,19 +82,15 @@ fun PerformNavigation(
     systemUiController: SystemUiController,
     statusBarColor: Color,
     innerPadding: PaddingValues,
-//    movieScreenViewModel: MovieScreenViewModel = hiltViewModel()
+    startDestination: SubGraph
 ) {
 
-    val movieScreenViewModel :MovieScreenViewModel = hiltViewModel()
-    val downloadScreenViewModel : DownloadScreenViewModel = hiltViewModel()
 
-//    val navController = rememberNavController()
 
 
     NavHost(
         navController = navHostController,
-        startDestination = SubGraph.onBoarding,
-//        modifier = Modifier.padding(innerPadding)
+        startDestination = startDestination,
     ) {
 
 
@@ -129,16 +126,32 @@ fun PerformNavigation(
                 )
 
             }
-            composable<PlansAndPaymentDestination.ChooseYourPaymentModeScreen> {
+
+            composable<PlansAndPaymentDestination.ChooseYourPaymentModeScreen>(
+                typeMap = mapOf(
+                    typeOf<PlanType>() to NavType.EnumType(PlanType::class.java),
+                    ))
+
+            {
+
+                val selectedPlanType = it.toRoute<PlansAndPaymentDestination.ChooseYourPaymentModeScreen>().selectedPlan
                 ChoosePaymentModeScreen(
+                    selectedPlanType=selectedPlanType,
                     navHostController = navHostController,
                     systemUiController = systemUiController,
                     statusBarColor = statusBarColor
                 )
 
             }
-            composable<PlansAndPaymentDestination.BillingDetailsScreen> {
+            composable<PlansAndPaymentDestination.BillingDetailsScreen>(
+                typeMap = mapOf(
+                    typeOf<PlanType>() to NavType.EnumType(PlanType::class.java)
+                )
+            ) {
+                val selectedPlanType=it.toRoute<PlansAndPaymentDestination.BillingDetailsScreen>().selectedPlanType
                 BillingDetailsScreen(
+                    innerPaddingValues = innerPadding,
+                    selectedPlanType = selectedPlanType,
                     navHostController = navHostController,
                     systemUiController = systemUiController,
                     statusBarColor = statusBarColor
@@ -147,6 +160,7 @@ fun PerformNavigation(
             }
             composable<PlansAndPaymentDestination.OtpScreen> {
                 OtpScreen(
+                    innerPaddingValues = innerPadding,
                     navHostController = navHostController,
                     systemUiController = systemUiController,
                     statusBarColor = statusBarColor
@@ -174,6 +188,7 @@ fun PerformNavigation(
             }
             composable<ProfileDestination.EnterUserNameScreen> {
                 EnterUserNameScreen(
+                    innerPaddingValues = innerPadding,
                     navHostController = navHostController,
                     systemUiController = systemUiController,
                     statusBarColor = statusBarColor
@@ -183,7 +198,8 @@ fun PerformNavigation(
                 EnterPasswordScreen(
                     navHostController = navHostController,
                     systemUiController = systemUiController,
-                    statusBarColor = statusBarColor
+                    statusBarColor = statusBarColor,
+                    innerPaddingValues = innerPadding
                 )
 
             }
@@ -191,7 +207,8 @@ fun PerformNavigation(
                 CreatePinScreen(
                     navHostController = navHostController,
                     systemUiController = systemUiController,
-                    statusBarColor = statusBarColor
+                    statusBarColor = statusBarColor,
+                    innerPaddingValues = innerPadding
                 )
 
             }
@@ -199,7 +216,8 @@ fun PerformNavigation(
                 ProfileCompleteScreen(
                     navHostController = navHostController,
                     systemUiController = systemUiController,
-                    statusBarColor = statusBarColor
+                    statusBarColor = statusBarColor,
+                    innerPaddingValues = innerPadding
                 )
 
             }
@@ -214,18 +232,17 @@ fun PerformNavigation(
                     systemUiController = systemUiController,
                     statusBarColor = statusBarColor,
                     innerPadding = innerPadding,
-                    movieScreenViewModel = movieScreenViewModel
                 )
 
 
             }
             composable<BottomNavigationDestination.MovieCategoriesScreen> {
 
-                MovieCategoriesScreen(movieScreenViewModel = movieScreenViewModel,navHostController = navHostController)
+                MovieCategoriesScreen(navHostController = navHostController)
 
             }
             composable<BottomNavigationDestination.MovieDownloadScreen> {
-                MovieDownloadScreen(downloadScreenViewModel = downloadScreenViewModel)
+                MovieDownloadScreen()
 
 
             }
@@ -233,24 +250,7 @@ fun PerformNavigation(
 
                 MoreScreen(onOpenAccount = {navHostController.navigateToAccountScreen() }, onOpenSettings = {navHostController.navigateToSettingScreen()}, innerPaddingValues = innerPadding)
             }
-//            moreScreen(onOpenAccount = {navHostController.navigateToAccountScreen() }, onOpenSettings = {navHostController.navigateToSettingScreen()})
-            /* composable<BottomNavigationDestination.MovieDetailScreen>(typeMap = mapOf(
-                 typeOf<UpComingMovieResponse>() to CustomNavType<UpComingMovieResponse>(
-                     UpComingMovieResponse::class,
-                     UpComingMovieResponse.serializer()
-                 )
-             )){
-                 val movie = it.toRoute<BottomNavigationDestination.MovieDetailScreen>()
-
-                 MovieDetailScreen(movie.upComingMovieResponse)
-             }*/
-            /* composable<HomeDestination.MovieDetailScreen>(   ) {
-                 val movie = it.toRoute<Int>()
-
-                 MovieDetailScreen(movie)
-
-
-             }*/
+//
 
             accountScreenRoot(
                 innerPaddingValues = innerPadding,
@@ -260,48 +260,28 @@ fun PerformNavigation(
             )
             settingScreenRoot(innerPaddingValues = innerPadding, onNavigateUp =  { navHostController.navigateUp() })
         }
-        /*navigation<SubGraph.MovieDetailsScreen>(startDestination = HomeDestination.MovieHomeScreen){
 
-            composable<HomeDestination.MovieDetailScreen>(   typeMap = mapOf(
-                typeOf<UpComingMovieResponse>() to CustomNavType<UpComingMovieResponse>(
-                    UpComingMovieResponse::class,
-                    UpComingMovieResponse.serializer()
-                )
-            )) {
-                val movie = it.toRoute<HomeDestination.MovieDetailScreen>()
-
-                MovieDetailScreen(movie.upComingMovieResponse)
-
-
-            }
-        }*/
         navigation<BottomNavigationDestination.MovieHomeScreen>(startDestination = HomeDestination.MovieLoadingScreen) {
             composable<HomeDestination.MovieLoadingScreen> {
 
                 LoadingScreen(
                     navHostController = navHostController,
-                    movieScreenViewModel = movieScreenViewModel
                 )
             }
 
             composable<HomeDestination.MovieDetailScreen>() {
-//                val movie = it.toRoute<Int>()
 
                 MovieDetailScreen(
                     systemUiController = systemUiController,
                     statusBarColor = statusBarColor,
                     innerPadding = innerPadding,
-                    movieScreenViewModel = movieScreenViewModel,
                             navHostController = navHostController
                 )
 
 
             }
         }
-       /* navigation<SubGraph.MoreAndSetting>(startDestination = BottomNavigationDestination.MoreScreen.route) {
-            accountScreenRoot { navHostController.navigateUp() }
-            settingScreenRoot { navHostController.navigateUp() }
-        }*/
+
 
 
 
