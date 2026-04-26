@@ -6,10 +6,13 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.prabhat.movieapp.data.model.categories.GenreResponseDto
 import com.prabhat.movieapp.data.model.categories.movieByCategories.MovieByCategoriesResponseDto
+import com.prabhat.movieapp.data.model.movie.popular.details.PopularSeriesDetailResponseDTO
 import com.prabhat.movieapp.data.model.movie.popular.videos.PopularSeriesVideoResponseDTO
+import com.prabhat.movieapp.data.model.movie.trending.details.TvDetailResponseDTO
 import com.prabhat.movieapp.data.model.movie.upcoming.UpComingMovieResponseDTO
 import com.prabhat.movieapp.data.model.movie.upcoming.UpComingMovieVideoResponseDTO.UpComingMovieVideoResponseDTO
 import com.prabhat.movieapp.data.model.movie.upcoming.credits.CreditsResponseDto
+import com.prabhat.movieapp.data.model.movie.upcoming.details.UpComingMovieDetailResponseDTO
 import com.prabhat.movieapp.data.network.movie.MovieApiService
 import com.prabhat.movieapp.data.network.movie.movieByCategories.MovieByCategoriesPagingSource
 import com.prabhat.movieapp.data.network.movie.popularSeries.pagingSource.PopularSeriesPagingSource
@@ -38,6 +41,14 @@ class MovieRepositoryImpl
             apiKey = "b52b167cdd0627e0ecc0924ce311cf15",
             page = page,
             language = language
+        )
+    }
+
+    override suspend fun getUpComingMovieDetailById(id: String): UpComingMovieDetailResponseDTO {
+        return movieApiService.getUpComingMovieDetailById(
+            apiKey = "b52b167cdd0627e0ecc0924ce311cf15",
+            movieId = id.toInt(),
+            language = "en-US"
         )
     }
 
@@ -75,6 +86,14 @@ class MovieRepositoryImpl
                     mapper = mapper
                 )
             }
+        )
+    }
+
+    override suspend fun getPopularSeriesDetailById(id: Int): PopularSeriesDetailResponseDTO {
+        return movieApiService.getPopularSeriesDetailById(
+            apiKey = "b52b167cdd0627e0ecc0924ce311cf15",
+            seriesId = id,
+            language = "en-US"
         )
     }
 
@@ -194,6 +213,17 @@ class MovieRepositoryImpl
                 )
             }
         ).flow
+    }
+
+    override suspend fun getTvDetailById(
+        id: Int,
+        language: String
+    ): TvDetailResponseDTO {
+        return movieApiService.getTvDetailById(
+            apiKey = "b52b167cdd0627e0ecc0924ce311cf15",
+            seriesId = id,
+            language = language
+        )
     }
 
 

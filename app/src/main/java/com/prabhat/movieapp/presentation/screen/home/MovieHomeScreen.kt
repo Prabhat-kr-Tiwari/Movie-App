@@ -91,8 +91,13 @@ import com.prabhat.movieapp.data.model.categories.GenreResponseDto
 import com.prabhat.movieapp.data.model.categories.movieByCategories.MovieByCategoriesResponseDto
 import com.prabhat.movieapp.data.model.categories.tvByCategories.TvByCategoriesResponseDto
 import com.prabhat.movieapp.data.model.movie.popular.PopularSeriesDTO
+import com.prabhat.movieapp.data.model.movie.popular.details.LastEpisodeToAir
+import com.prabhat.movieapp.data.model.movie.popular.details.NextEpisodeToAir
+import com.prabhat.movieapp.data.model.movie.popular.details.PopularSeriesDetailResponseDTO
+import com.prabhat.movieapp.data.model.movie.popular.details.SpokenLanguage
 import com.prabhat.movieapp.data.model.movie.popular.videos.PopularSeriesVideoResponseDTO
 import com.prabhat.movieapp.data.model.movie.trending.TrendingOfWeekResponseDto
+import com.prabhat.movieapp.data.model.movie.trending.details.TvDetailResponseDTO
 import com.prabhat.movieapp.data.model.movie.upcoming.Dates
 import com.prabhat.movieapp.data.model.movie.upcoming.Result
 import com.prabhat.movieapp.data.model.movie.upcoming.UpComingMovieResponseDTO
@@ -100,6 +105,7 @@ import com.prabhat.movieapp.data.model.movie.upcoming.UpComingMovieVideoResponse
 import com.prabhat.movieapp.data.model.movie.upcoming.credits.Cast
 import com.prabhat.movieapp.data.model.movie.upcoming.credits.CreditsResponseDto
 import com.prabhat.movieapp.data.model.movie.upcoming.credits.Crew
+import com.prabhat.movieapp.data.model.movie.upcoming.details.UpComingMovieDetailResponseDTO
 import com.prabhat.movieapp.data.network.movie.MovieApiService
 import com.prabhat.movieapp.data.network.movie.popularSeries.pagingSource.PopularSeriesPagingSource
 import com.prabhat.movieapp.data.network.movie.trending.pagindSource.TrendingOfWeekPagingSource
@@ -115,6 +121,7 @@ import com.prabhat.movieapp.domain.use_case.watchList.RemoveMovieFromWatchlistUs
 import com.prabhat.movieapp.mappers.Mapper
 import com.prabhat.movieapp.mappers.popularSeries.PopularSeriesDTOToPopularSeriesMapper
 import com.prabhat.movieapp.mappers.trending.TrendingOfWeekResponseDtoToTrendingOfWeekMapper
+import com.prabhat.movieapp.navigation.BottomNavigationDestination
 import com.prabhat.movieapp.navigation.HomeDestination
 import com.prabhat.movieapp.presentation.screen.home.movieDetail.MockWatchListRepository
 import com.prabhat.movieapp.presentation.screen.introScreen.HorizontalPagerContent
@@ -154,27 +161,8 @@ fun MovieHomeScreen(
     val onTrendingOfWeekSelected = remember { mutableStateOf(false) }
 
 
-   /* LaunchedEffect(onUpComingMovieSelected.value) {
-        if (onUpComingMovieSelected.value) {
-            val movie = movieScreenViewModel.selectedMovie.value
-            if (movie != null) {
-                navHostController.navigate(HomeDestination.MovieLoadingScreen)
-                onUpComingMovieSelected.value = false
-            }
 
-        }
-    }*/
-    LaunchedEffect(onUpComingMovieSelected.value) {
-        if (onUpComingMovieSelected.value) {
-            val movie = movieScreenViewModel.selectedMovie.value
-            if (movie != null) {
-//                navHostController.navigate(HomeDestination.MovieDetailScreen)
-                navHostController.navigate(HomeDestination.MovieLoadingScreen)
-                onUpComingMovieSelected.value = false
-            }
 
-        }
-    }
     LaunchedEffect(onSeriesSelected.value) {
         if (onSeriesSelected.value){
             val series = movieScreenViewModel.selectedSeries.value
@@ -369,8 +357,8 @@ fun MovieHomeScreen(
                                     contentScale = ContentScale.FillBounds,
                                     modifier = Modifier
                                         .clickable {
-                                            movieScreenViewModel.onMovieSelected(movie)
-                                            onUpComingMovieSelected.value = true
+
+                                            navHostController.navigate(HomeDestination.MovieDetailScreen(movieTag = MovieTag(id = movie.id), movieCategory = MovieCategory.UPCOMING))
 
                                         }
                                         .fillMaxSize()
@@ -558,8 +546,10 @@ fun MovieHomeScreen(
                                         )
                                     ).padding(10.dp).clip(RoundedCornerShape(10.dp))
                                     .clickable {
-                                        movieScreenViewModel.onSeriesSelected(series = series)
-                                        onSeriesSelected.value = true
+                                       /* movieScreenViewModel.onSeriesSelected(series = series)
+                                        onSeriesSelected.value = true*/
+                                        navHostController.navigate(HomeDestination.MovieDetailScreen(movieTag = MovieTag(id = series.id), movieCategory = MovieCategory.SERIES))
+
                                     }
 
                             )
@@ -604,8 +594,15 @@ fun MovieHomeScreen(
 
 
 
-            TrendingMovieSection(innerPadding = innerPadding,trendingOfWeekItems=trendingOfWeekItems, movieScreenViewModel = movieScreenViewModel){
-                onTrendingOfWeekSelected.value = true
+            TrendingMovieSection(innerPadding = innerPadding,trendingOfWeekItems=trendingOfWeekItems, movieScreenViewModel = movieScreenViewModel){mediaType, id ->
+//                onTrendingOfWeekSelected.value = true
+                if (mediaType=="tv"){
+                    navHostController.navigate(HomeDestination.MovieDetailScreen(movieTag = MovieTag(id = id.toInt()), movieCategory = MovieCategory.TRENDING_WEEK))
+                }
+                if (mediaType=="movie"){
+                    navHostController.navigate(HomeDestination.MovieDetailScreen(movieTag = MovieTag(id = id.toInt()), movieCategory = MovieCategory.UPCOMING))
+                }
+
             }
 
 
@@ -625,7 +622,7 @@ fun LazyListScope.TrendingMovieSection(
     trendingOfWeekItems:
     LazyPagingItems<TrendingOfWeek>,
     movieScreenViewModel: MovieScreenViewModel,
-    onClick:()->Unit
+    onClick:(mediaType:String,id:String)->Unit
 
 ) {
 //    val trendingOfWeekItems = trendingOfWeekPager.value.collectAsLazyPagingItems()
@@ -727,7 +724,7 @@ fun ThreeItem(
 //    content: List<HorizontalPagerContent>,
     content: LazyPagingItems<TrendingOfWeek>,
     innerPadding: PaddingValues,movieScreenViewModel: MovieScreenViewModel,
-    onClick:()->Unit
+    onClick:(mediaType:String,id:String)->Unit
 ) {
 
     Card(
@@ -794,7 +791,8 @@ fun ThreeItem(
 
                                         Log.d("TRENDINGMOVIE", "ThreeItem: ${item}")
                                         movieScreenViewModel.onTrendingOfWeekSelected(item)
-                                        onClick.invoke()
+                                        item.mediaType?.let { onClick.invoke(it,  item.id.toString()) }
+
 
                                     }
                             )
@@ -915,6 +913,41 @@ fun PreviewMovieHomeScreen() {
                     ))
         }
 
+        override suspend fun getUpComingMovieDetailById(
+            movieId: Int,
+            apiKey: String,
+            language: String
+        ): UpComingMovieDetailResponseDTO {
+            return UpComingMovieDetailResponseDTO(
+                adult = false,
+                backdrop_path = "/mock_backdrop1.jpg",
+                belongs_to_collection = "null",
+                budget = 1000000,
+                genres = listOf(),
+                homepage = "https://www.example.com",
+                id = 101,
+                imdb_id = "tt1234567",
+                original_language = "en",
+                original_title = "Mock Movie 1",
+                overview = "This is the overview of Mock Movie 1. It's an exciting action-adventure movie.",
+                popularity = 1234.5,
+                poster_path = "/5qGIxdEO841C0tdY8vOdLoRVrr0.jpg",
+                production_companies = listOf(),
+                production_countries = listOf(),
+                release_date = "2025-01-15",
+                revenue = 2000000,
+                runtime = 120,
+                spoken_languages = listOf(),
+                status = "Released",
+                tagline = "This is a tagline for Mock Movie 1.",
+                title = "Mock Movie 1",
+                video = false,
+                vote_average = 7.8,
+                vote_count = 256,
+                origin_country = emptyList(),
+            )
+        }
+
         override suspend fun getMovieCredits(
             movieId: Int,
             apiKey: String,
@@ -992,6 +1025,81 @@ fun PreviewMovieHomeScreen() {
                results = listOf()
                , total_results = 2,
                total_pages = 4
+            )
+        }
+
+        override suspend fun getPopularSeriesDetailById(
+            seriesId: Int,
+            apiKey: String,
+            language: String
+        ): PopularSeriesDetailResponseDTO {
+            return PopularSeriesDetailResponseDTO(
+                adult = false,
+                backdrop_path = "/path_to_backdrop.jpg",
+                created_by = emptyList(),
+                episode_run_time = listOf(45, 50),
+                first_air_date = "2020-01-01",
+                genres = emptyList(),
+                homepage = "https://example.com",
+                id = 12345,
+                in_production = true,
+                languages = listOf("en"),
+                last_air_date = "2023-12-01",
+                last_episode_to_air = LastEpisodeToAir(
+                    id = 101,
+                    name = "Final Episode",
+                    overview = "The story concludes.",
+                    vote_average = 8.8,
+                    vote_count = 1200,
+                    air_date = "2023-12-01",
+                    episode_number = 10,
+                    production_code = "S01E10",
+                    runtime = 50,
+                    season_number = 1,
+                    show_id = 12345,
+                    still_path = "/episode_still.jpg",
+                    episode_type =" TODO()"
+                ),
+                name = "Sample Series",
+                networks =emptyList(),
+                next_episode_to_air = NextEpisodeToAir(
+                    air_date =" TODO()",
+                    episode_number = 1,
+                    episode_type = "",
+                    id = 1,
+                    name = "",
+                    overview = "",
+                    production_code = "TODO()",
+                    runtime = "TODO()",
+                    season_number = 1,
+                    show_id = 1,
+                    still_path ="",
+                    vote_average = 12,
+                    vote_count = 12
+                ),
+                number_of_episodes = 10,
+                number_of_seasons = 1,
+                origin_country = listOf("US"),
+                original_language = "en",
+                original_name = "Sample Series Original",
+                overview = "This is a sample overview of the series used for testing purposes.",
+                popularity = 1234.56,
+                poster_path = "/poster.jpg",
+                production_companies = emptyList(),
+                production_countries = emptyList(),
+                seasons = emptyList(),
+                spoken_languages = listOf(
+                    SpokenLanguage(
+                        english_name = "English",
+                        iso_639_1 = "en",
+                        name = "English"
+                    )
+                ),
+                status = "Ended",
+                tagline = "Every story has an end.",
+                type = "Scripted",
+                vote_average = 8.7,
+                vote_count = 2500
             )
         }
 
@@ -1097,6 +1205,75 @@ fun PreviewMovieHomeScreen() {
                 , total_pages = 3, total_results = 4)
         }
 
+        override suspend fun getTvDetailById(
+            seriesId: Int,
+            apiKey: String,
+            language: String
+        ): TvDetailResponseDTO {
+            return TvDetailResponseDTO(
+                adult = false,
+                backdrop_path = "/path_to_backdrop.jpg",
+                created_by = emptyList(),
+                episode_run_time = listOf(45, 50),
+                first_air_date = "2020-01-01",
+                genres = emptyList(),
+                homepage = "https://example.com",
+                id = 12345,
+                in_production = true,
+                languages = listOf("en"),
+                last_air_date = "2023-12-01",
+                last_episode_to_air = com.prabhat.movieapp.data.model.movie.trending.details.LastEpisodeToAir(
+                    id = 101,
+                    name = "Final Episode",
+                    overview = "The story concludes.",
+                    vote_average = 8.8,
+                    vote_count = 1200,
+                    air_date = "2023-12-01",
+                    episode_number = 10,
+                    production_code = "S01E10",
+                    runtime = 50,
+                    season_number = 1,
+                    show_id = 12345
+                    , still_path = "/episode_still.jpg"
+                    , episode_type =" TODO()"
+                ),
+                name = "Sample Series",
+                networks =emptyList(),
+                next_episode_to_air = com.prabhat.movieapp.data.model.movie.trending.details.NextEpisodeToAir(
+                    air_date =" TODO()",
+                    episode_number = 1,
+                    episode_type = "",
+                    id = 1,
+                    name = "",
+                    overview = "",
+                    production_code = "TODO()",
+                    runtime = "TODO()",
+                    season_number = 1,
+                    show_id = 1,
+                    still_path ="",
+                    vote_average = 12,
+                    vote_count = 12
+                ),
+                number_of_episodes = 10,
+                number_of_seasons = 1,
+                origin_country = listOf("US"),
+                original_language = "en",
+                original_name = "Sample Series Original",
+                overview = "This is a sample overview of the series used for testing purposes.",
+                popularity = 1234.56,
+                poster_path = "/poster.jpg",
+                production_companies = emptyList(),
+                production_countries = emptyList(),
+                seasons = emptyList(),
+                spoken_languages = emptyList(),
+                status = "Ended",
+                tagline = "Every story has an end.",
+                type = "Scripted",
+                vote_average = 8.7,
+                vote_count = 2500
+            )
+        }
+
         override suspend fun getGenreList(apiKey: String): GenreResponseDto {
             return GenreResponseDto(genres = listOf())
         }
@@ -1121,6 +1298,7 @@ fun PreviewMovieHomeScreen() {
         override suspend fun getTvGenreList(apiKey: String): GenreResponseDto {
             return GenreResponseDto(genres = listOf())
         }
+
 
     }
     class FakePopularSeriesMapper : Mapper<PopularSeriesDTO, PopularSeries> {
@@ -1261,6 +1439,37 @@ class MockMovieRepository(private val movieApiService: MovieApiService,
 
     }
 
+    override suspend fun getUpComingMovieDetailById(id: String): UpComingMovieDetailResponseDTO {
+        return UpComingMovieDetailResponseDTO(
+            adult = false,
+            backdrop_path = "/mock_backdrop1.jpg",
+            belongs_to_collection = "null",
+            budget = 1000000,
+            genres = listOf(),
+            homepage = "https://www.example.com",
+            id = 101,
+            imdb_id = "tt1234567",
+            original_language = "en",
+            original_title = "Mock Movie 1",
+            overview = "This is the overview of Mock Movie 1. It's an exciting action-adventure movie.",
+            popularity = 1234.5,
+            poster_path = "/5qGIxdEO841C0tdY8vOdLoRVrr0.jpg",
+            production_companies = listOf(),
+            production_countries = listOf(),
+            release_date = "2025-01-15",
+            revenue = 2000000,
+            runtime = 120,
+            spoken_languages = listOf(),
+            status = "Released",
+            tagline = "This is a tagline for Mock Movie 1.",
+            title = "Mock Movie 1",
+            video = false,
+            vote_average = 7.8,
+            vote_count = 256,
+            origin_country = emptyList(),
+        )
+    }
+
     override suspend fun getMovieCredits(movieId: Int, language: String): CreditsResponseDto {
         return CreditsResponseDto(
             id = 1, crew =
@@ -1335,6 +1544,77 @@ class MockMovieRepository(private val movieApiService: MovieApiService,
                     mapper = mapper
                 )
             })
+    }
+
+    override suspend fun getPopularSeriesDetailById(id: Int): PopularSeriesDetailResponseDTO {
+        return PopularSeriesDetailResponseDTO(
+            adult = false,
+            backdrop_path = "/path_to_backdrop.jpg",
+            created_by = emptyList(),
+            episode_run_time = listOf(45, 50),
+            first_air_date = "2020-01-01",
+            genres = emptyList(),
+            homepage = "https://example.com",
+            id = 12345,
+            in_production = true,
+            languages = listOf("en"),
+            last_air_date = "2023-12-01",
+            last_episode_to_air = LastEpisodeToAir(
+                id = 101,
+                name = "Final Episode",
+                overview = "The story concludes.",
+                vote_average = 8.8,
+                vote_count = 1200,
+                air_date = "2023-12-01",
+                episode_number = 10,
+                production_code = "S01E10",
+                runtime = 50,
+                season_number = 1,
+                show_id = 12345,
+                still_path = "/episode_still.jpg",
+                episode_type =" TODO()"
+            ),
+            name = "Sample Series",
+            networks =emptyList(),
+            next_episode_to_air = NextEpisodeToAir(
+                air_date =" TODO()",
+                episode_number = 1,
+                episode_type = "",
+                id = 1,
+                name = "",
+                overview = "",
+                production_code = "TODO()",
+                runtime = "TODO()",
+                season_number = 1,
+                show_id = 1,
+                still_path ="",
+                vote_average = 12,
+                vote_count = 12
+            ),
+            number_of_episodes = 10,
+            number_of_seasons = 1,
+            origin_country = listOf("US"),
+            original_language = "en",
+            original_name = "Sample Series Original",
+            overview = "This is a sample overview of the series used for testing purposes.",
+            popularity = 1234.56,
+            poster_path = "/poster.jpg",
+            production_companies = emptyList(),
+            production_countries = emptyList(),
+            seasons = emptyList(),
+            spoken_languages = listOf(
+                SpokenLanguage(
+                    english_name = "English",
+                    iso_639_1 = "en",
+                    name = "English"
+                )
+            ),
+            status = "Ended",
+            tagline = "Every story has an end.",
+            type = "Scripted",
+            vote_average = 8.7,
+            vote_count = 2500
+        )
     }
 
     override suspend fun getTrendingOfWeek(): Pager<Int, TrendingOfWeek> {
@@ -1472,6 +1752,74 @@ class MockMovieRepository(private val movieApiService: MovieApiService,
         // Return a Flow that emits the PagingData
         return flowOf(pagingData)
 
+    }
+
+    override suspend fun getTvDetailById(
+        id: Int,
+        language: String
+    ): TvDetailResponseDTO {
+        return TvDetailResponseDTO(
+            adult = false,
+            backdrop_path = "/path_to_backdrop.jpg",
+            created_by = emptyList(),
+            episode_run_time = listOf(45, 50),
+            first_air_date = "2020-01-01",
+            genres = emptyList(),
+            homepage = "https://example.com",
+            id = 12345,
+            in_production = true,
+            languages = listOf("en"),
+            last_air_date = "2023-12-01",
+            last_episode_to_air = com.prabhat.movieapp.data.model.movie.trending.details.LastEpisodeToAir(
+                id = 101,
+                name = "Final Episode",
+                overview = "The story concludes.",
+                vote_average = 8.8,
+                vote_count = 1200,
+                air_date = "2023-12-01",
+                episode_number = 10,
+                production_code = "S01E10",
+                runtime = 50,
+                season_number = 1,
+                show_id = 12345
+                , still_path = "/episode_still.jpg"
+                , episode_type =" TODO()"
+            ),
+            name = "Sample Series",
+            networks =emptyList(),
+            next_episode_to_air = com.prabhat.movieapp.data.model.movie.trending.details.NextEpisodeToAir(
+                air_date =" TODO()",
+                episode_number = 1,
+                episode_type = "",
+                id = 1,
+                name = "",
+                overview = "",
+                production_code = "TODO()",
+                runtime = "TODO()",
+                season_number = 1,
+                show_id = 1,
+                still_path ="",
+                vote_average = 12,
+                vote_count = 12
+            ),
+            number_of_episodes = 10,
+            number_of_seasons = 1,
+            origin_country = listOf("US"),
+            original_language = "en",
+            original_name = "Sample Series Original",
+            overview = "This is a sample overview of the series used for testing purposes.",
+            popularity = 1234.56,
+            poster_path = "/poster.jpg",
+            production_companies = emptyList(),
+            production_countries = emptyList(),
+            seasons = emptyList(),
+            spoken_languages = emptyList(),
+            status = "Ended",
+            tagline = "Every story has an end.",
+            type = "Scripted",
+            vote_average = 8.7,
+            vote_count = 2500
+        )
     }
 
     override suspend fun getTvGenreList(): GenreResponseDto {
