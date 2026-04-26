@@ -1,5 +1,7 @@
 package com.prabhat.movieapp.navigation
 
+import com.prabhat.movieapp.presentation.screen.home.MovieCategory
+import com.prabhat.movieapp.presentation.screen.home.MovieTag
 import com.prabhat.movieapp.presentation.screen.plansAndPaymentScreen.chooseYourPlanScreen.PlanType
 import kotlinx.serialization.Serializable
 
@@ -125,10 +127,10 @@ sealed class HomeDestination {
     @Serializable
     data object MovieLoadingScreen : HomeDestination()
 
-    /*   @Serializable
-       data class MovieDetailScreen(val id: Int) : HomeDestination()*/
+
+
     @Serializable
-    data object MovieDetailScreen : HomeDestination()
+    data class MovieDetailScreen(val movieTag: MovieTag,val movieCategory: MovieCategory) : HomeDestination()
 }
 
 sealed class CategoriesDestination {
@@ -169,6 +171,8 @@ sealed class BottomNavigationDestination(val route: String) {
     @Serializable
     data object MoreScreen : BottomNavigationDestination("more")
 
+    @Serializable
+    data class MovieDetailScreen(val movieTag: MovieTag) : BottomNavigationDestination("detail")
 
     /*   @Serializable
        data class MovieDetailScreen(val upComingMovieResponse: UpComingMovieResponse):BottomNavigationDestination(route = "movieDetail")*/

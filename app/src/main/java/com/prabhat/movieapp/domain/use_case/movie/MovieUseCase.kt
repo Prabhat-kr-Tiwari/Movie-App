@@ -10,10 +10,13 @@ import androidx.paging.liveData
 import com.prabhat.movieapp.data.appSettings.SessionId
 import com.prabhat.movieapp.data.model.categories.GenreResponseDto
 import com.prabhat.movieapp.data.model.movie.popular.PopularSeriesDTO
+import com.prabhat.movieapp.data.model.movie.popular.details.PopularSeriesDetailResponseDTO
 import com.prabhat.movieapp.data.model.movie.popular.videos.PopularSeriesVideoResponseDTO
+import com.prabhat.movieapp.data.model.movie.trending.details.TvDetailResponseDTO
 import com.prabhat.movieapp.data.model.movie.upcoming.UpComingMovieResponseDTO
 import com.prabhat.movieapp.data.model.movie.upcoming.UpComingMovieVideoResponseDTO.UpComingMovieVideoResponseDTO
 import com.prabhat.movieapp.data.model.movie.upcoming.credits.CreditsResponseDto
+import com.prabhat.movieapp.data.model.movie.upcoming.details.UpComingMovieDetailResponseDTO
 import com.prabhat.movieapp.domain.model.categories.MovieByCategories
 import com.prabhat.movieapp.domain.model.popular.PopularSeries
 import com.prabhat.movieapp.domain.model.trending.TrendingOfWeek
@@ -46,6 +49,17 @@ class MovieUseCase @Inject constructor(private val movieRepository: MovieReposit
         val response=movieRepository.getUpComingMovie(page = page, language = language)
 
         if (response.results.isNotEmpty()) {
+            emit(Resource.Success(response))
+        } else {
+            emit(Resource.Error("error-->$response"))
+        }
+
+    }.onStart { emit(Resource.Loading()) }.catch {
+        emit(Resource.Error(it.message))
+    }
+    fun getUpComingMovieDetailById(id:String):Flow<Resource<UpComingMovieDetailResponseDTO>> = flow<Resource<UpComingMovieDetailResponseDTO>>{
+        val response=movieRepository.getUpComingMovieDetailById(id = id)
+        if (response.id > 0) {
             emit(Resource.Success(response))
         } else {
             emit(Resource.Error("error-->$response"))
@@ -134,6 +148,17 @@ class MovieUseCase @Inject constructor(private val movieRepository: MovieReposit
         emit(trending to popular) // Emits a Pair of both results
     }.flowOn(Dispatchers.IO)
 
+    fun getPopularSeriesDetailById(id:String):Flow<Resource<PopularSeriesDetailResponseDTO>> = flow<Resource<PopularSeriesDetailResponseDTO>>{
+        val response=movieRepository.getPopularSeriesDetailById(id = id.toInt())
+        if (response.id > 0) {
+            emit(Resource.Success(response))
+        } else {
+            emit(Resource.Error("error-->$response"))
+        }
+
+    }.onStart { emit(Resource.Loading()) }.catch {
+        emit(Resource.Error(it.message))
+    }
     fun getSeriesCredits(seriesId:Int,language: String):Flow<Resource<CreditsResponseDto>> = flow<Resource<CreditsResponseDto>>{
         val response=movieRepository.getSeriesCredits(seriesId = seriesId, language = language)
 
@@ -224,6 +249,15 @@ class MovieUseCase @Inject constructor(private val movieRepository: MovieReposit
         movieRepository.getTvByCategories(withGenre)
 
 
+    fun getTvDetailById(id:Int,language: String):Flow<Resource<TvDetailResponseDTO>>
+    =flow<Resource<TvDetailResponseDTO>> {
+        val response = movieRepository.getTvDetailById(id = id, language = language)
+        emit(Resource.Success(data = response))
+    }.onStart {
+        emit(Resource.Loading())
+    }.catch {
+        emit(Resource.Error(it.message))
+    }
 
 
 }

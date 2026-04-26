@@ -5,13 +5,15 @@ import com.prabhat.movieapp.data.model.categories.GenreResponseDto
 import com.prabhat.movieapp.data.model.categories.movieByCategories.MovieByCategoriesResponseDto
 import com.prabhat.movieapp.data.model.categories.tvByCategories.TvByCategoriesResponseDto
 import com.prabhat.movieapp.data.model.movie.popular.PopularSeriesDTO
+import com.prabhat.movieapp.data.model.movie.popular.details.PopularSeriesDetailResponseDTO
 import com.prabhat.movieapp.data.model.movie.popular.videos.PopularSeriesVideoResponseDTO
 import com.prabhat.movieapp.data.model.movie.trending.TrendingOfWeekResponseDto
+import com.prabhat.movieapp.data.model.movie.trending.details.TvDetailResponseDTO
 import com.prabhat.movieapp.data.model.movie.upcoming.UpComingMovieResponseDTO
 import com.prabhat.movieapp.data.model.movie.upcoming.UpComingMovieVideoResponseDTO.UpComingMovieVideoResponseDTO
 import com.prabhat.movieapp.data.model.movie.upcoming.credits.CreditsResponseDto
+import com.prabhat.movieapp.data.model.movie.upcoming.details.UpComingMovieDetailResponseDTO
 import retrofit2.http.GET
-import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -25,6 +27,13 @@ interface MovieApiService {
         @Query("language") language: String,
 
     ): UpComingMovieResponseDTO
+
+    @GET("movie/{movie_id}")
+    suspend fun getUpComingMovieDetailById(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String,
+    ): UpComingMovieDetailResponseDTO
 
 
     @GET("movie/{movie_id}/credits")
@@ -47,6 +56,13 @@ interface MovieApiService {
         @Query("page") page: Int,
         @Query("language") language: String,
         ):PopularSeriesDTO
+    @GET("tv/{series_id}")
+    suspend fun getPopularSeriesDetailById(
+        @Path("series_id") seriesId: Int,
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String,
+
+    ): PopularSeriesDetailResponseDTO
     @GET("tv/{series_id}/credits")
     suspend fun getSeriesCredits(
         @Path("series_id") seriesId: Int,
@@ -69,6 +85,13 @@ interface MovieApiService {
         @Query("page") page: Int,
         @Query("language") language: String,
     ):TrendingOfWeekResponseDto
+
+    @GET("tv/{series_id}")
+    suspend fun getTvDetailById(
+        @Path("series_id") seriesId: Int,
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String,
+    ): TvDetailResponseDTO
 
 
     //get genere list

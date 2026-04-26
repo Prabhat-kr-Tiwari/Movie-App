@@ -92,17 +92,13 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
 
     }.cachedIn(viewModelScope)
 
-/*    private val _selectedMovie = MutableStateFlow<UpComingMovieResponse?>(null)
-    val selectedMovie: StateFlow<UpComingMovieResponse?>  = _selectedMovie.asStateFlow()*/
+
     private val _selectedMovie:MutableState<UpComingMovieResponse?> = mutableStateOf<UpComingMovieResponse?>(null)
     val selectedMovie: MutableState<UpComingMovieResponse?>  = _selectedMovie
 
     fun onMovieSelected(movie: UpComingMovieResponse) {
-        /*viewModelScope.launch {
-            _selectedMovie.emit(movie)
-        }*/
+
         _selectedMovie.value = movie
-        Log.d("JOHN", "onMovieSelected: "+movie)
         getMovieCredits(movieId = movie.id, language = "en-US")
         getMovieVideo(movieId = movie.id)
         isMovieInWatchList(movieId = movie.id)
@@ -115,8 +111,7 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
 
     private val _movieCreditsState = mutableStateOf(MovieCreditsState())
     val movieCreditsState:State<MovieCreditsState> = _movieCreditsState
- /* private val _movieCreditsState = MutableStateFlow(MovieCreditsState())
-    val movieCreditsState:StateFlow<MovieCreditsState> = _movieCreditsState*/
+
 
     private fun getMovieCredits(movieId:Int, language:String){
         movieUseCase.getMovieCredits(movieId=movieId, language = language)     .onEach { it ->
@@ -156,12 +151,10 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
         movieUseCase.getUpComingMovieVideos(movieId=movieId)     .onEach { it ->
             when(it){
                 is Resource.Loading->{
-                    Log.d("JOHN", "getMovieCredits: loading")
                     _movieVideoState.value=_movieVideoState.value.copy(isLoading = true)
                 }
                 is Resource.Success->{
                     val movieVideos=it.data?.toUpcomingMovieVide()
-                    Log.d("JOHN", "getMovieCredits:  upcomingMovies"+movieVideos)
 
                     _movieVideoState.value=_movieVideoState.value.copy(isLoading = false,data = movieVideos!!)
 
@@ -169,7 +162,6 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
                 }
                 is Resource.Error->{
                     _movieVideoState.value= it.message?.let { it1 -> _movieVideoState.value.copy(error = it1) }!!
-                    Log.d("JOHN", "getMovieCredits: "+it.message.toString())
                 }
 
             }
@@ -219,7 +211,6 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
         viewModelScope.launch {
             viewModelScope.launch {
                 movieFlow.collectLatest { (trending, popular) ->
-                    Log.d("JUHI", "getPopularSeries: VIEWMODEL $trending")
                     _trendingMoviesFlow.value = trending
                     _popularSeriesPagingData.value = popular
                 }
@@ -227,35 +218,7 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
         }
     }
 
-    // Trending movies state
-/*    private val _trendingOfWeekPagingData = MutableStateFlow<Flow<PagingData<TrendingOfWeek>>>(
-        emptyFlow()
-    )
-    val trendingOfWeekPagingData: StateFlow<Flow<PagingData<TrendingOfWeek>>> = _trendingOfWeekPagingData*/
 
-
-
-   /* private fun getTrendingOfWeek() {
-        viewModelScope.launch {
-            movieUseCase.getTrendingOfWeek()
-                .cachedIn(viewModelScope) // Caches paging data
-                .collect { pagingData ->
-                    Log.d("TRENDINGWAX", "getTrendingOfWeek: "+pagingData)
-                    _trendingOfWeekPagingData.value = pagingData
-                }
-        }
-    }*/
-
-
-   /* private fun getTrendingOfWeek() {
-        viewModelScope.launch {
-            movieUseCase.getTrendingOfWeek()
-                .cachedIn(viewModelScope)
-                .collect { pagingData ->
-                    _trendingMoviesFlow.value = pagingData // ✅ Correct assignment
-                }
-        }
-    }*/
 
 
 
@@ -266,12 +229,10 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
         movieUseCase.getSeriesCredits(seriesId =seriesId, language = language)     .onEach { it ->
             when(it){
                 is Resource.Loading->{
-                    Log.d("JOHN", "getSeriesCredits: loading")
                     _seriesCreditsState.value=_seriesCreditsState.value.copy(isLoading = true)
                 }
                 is Resource.Success->{
                     val seriesCredits=it.data?.toMovieCredits()
-                    Log.d("JOHN", "getSeriesCredits:  upcomingMovies"+seriesCredits)
 
                     _seriesCreditsState.value=_seriesCreditsState.value.copy(isLoading = false,data = seriesCredits!!)
 
@@ -279,7 +240,6 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
                 }
                 is Resource.Error->{
                     _seriesCreditsState.value= it.message?.let { it1 -> _seriesCreditsState.value.copy(error = it1) }!!
-                    Log.d("JOHN", "getSeriesCredits: "+it.message.toString())
                 }
 
             }
@@ -298,7 +258,6 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
     fun onSeriesSelected(series: PopularSeries) {
 
         _selectedSeries.value = series
-        Log.d("JOHN", "onMovieSelected: "+series)
       /*  getMovieCredits(movieId = movie.id, language = "en-US")
         getMovieVideo(movieId = movie.id)*/
         //same as series so using the movie
@@ -339,8 +298,7 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
     //popular series videos
     private val _popularSeriesVideoState= mutableStateOf(PopularSeriesVideoState())
     val popularSeriesVideoState:State<PopularSeriesVideoState> = _popularSeriesVideoState
-    /*private val _popularSeriesVideoState= MutableStateFlow(PopularSeriesVideoState())
-    val popularSeriesVideoState:StateFlow<PopularSeriesVideoState> = _popularSeriesVideoState*/
+
 
     private fun getPopularSeriesVideo(seriesId:Int){
         movieUseCase.getPopularSeriesVideos(seriesId = seriesId)     .onEach { it ->
@@ -382,29 +340,13 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
     }
 
     //movie categories
- /*   private val _options = listOf(
-        SelectionOption("Newest", false),
-        SelectionOption("Oldest", false),
-        SelectionOption("Top", false),
-        SelectionOption("Order", false),
-    ).toMutableStateList()*/
-//    private val _options: MutableState<SelectionOption?> = mutableStateOf(null)
+
     private val _options: MutableState<SnapshotStateList<SelectionOption>> = mutableStateOf(SnapshotStateList<SelectionOption>())
     
     val options: MutableState<SnapshotStateList<SelectionOption>>
         get() = _options
 
-   /* fun selectionOptionSelected(selectedOption: SelectionOption) {
-        *//*_options.forEach { it.selected = false }
-        _options.find { it == selectedOption.option }?.selected = true*//*
-        val list = _options.value
-        list.forEach { it.selected=false }
-        _options.value.forEach { it.selected=false }
-        _options.value.find {
-            it==selectedOption
-        }?.selected = true
 
-    }*/
     fun selectionOptionSelected(selectedOption: SelectionOption) {
         _options.value.forEach { it.selected = false }
 
@@ -420,7 +362,6 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
     private val _genreListState= mutableStateOf(GenreListState())
     val genreListState:State<GenreListState> = _genreListState
     private fun getGenreList() {
-        Log.d("RAJA", "getGenreList: called VIEWMODEL")
 
         val genreFlow = movieUseCase.getGenreList()
             .debounce(1000)
@@ -430,12 +371,10 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
             genreFlow.collectLatest { result ->  // Actively collect here!
                 when (result) {
                     is Resource.Loading -> {
-                        Log.d("ALEXA", "getGenreList: loading")
                         _genreListState.value = _genreListState.value.copy(isLoading = true)
                     }
                     is Resource.Success -> {
                         val genreList = result.data?.toGenre()
-                        Log.d("ALEXA", "getGenreList:  upcomingMovies" + genreList)
                         val mappedList = genreList?.map { genre ->
                             SelectionOption(genreId = genre.genreId, genreName = genre.genreName, initialSelectedValue = false)
                         }?.toMutableStateList()
@@ -445,13 +384,11 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
                         }
 
                         _genreListState.value = _genreListState.value.copy(data = genreList!!)
-                        Log.d("ALEXA", "getGenreList: MovieScreenViewModel $genreList")
                     }
                     is Resource.Error -> {
                         _genreListState.value = result.message?.let { it1 ->
                             _genreListState.value.copy(error = it1)
                         }!!
-                        Log.d("ALEXA", "getGenreList: " + result.message.toString())
                     }
                 }
             }
@@ -486,7 +423,6 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
     fun onMovieByCategoriesSelected(movieByCategories: MovieByCategories) {
 
         _selectedMovieByCategories.value = movieByCategories
-        Log.d("JOHN", "onMovieSelected: "+movieByCategories)
         /*  getMovieCredits(movieId = movie.id, language = "en-US")
           getMovieVideo(movieId = movie.id)*/
         //same as series so using the movie
@@ -573,7 +509,6 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
     fun onTvByCategoriesSelected(tvByCategories: TvByCategories) {
 
         _selectedTvByCategories.value = tvByCategories
-        Log.d("JOHN", "onMovieSelected: "+tvByCategories)
         /*  getMovieCredits(movieId = movie.id, language = "en-US")
           getMovieVideo(movieId = movie.id)*/
         //same as series so using the movie
@@ -589,27 +524,21 @@ class MovieScreenViewModel @Inject constructor(private val movieUseCase: MovieUs
     val watchlistState: State<WatchListState> = _watchListsState
 
     fun isMovieInWatchList(movieId:Int){
-        Log.d("AJITHAL", "isMovieInWatchList: $movieId")
         isMovieInWatchlistUseCase.isMovieInWatchList(movieId = movieId)
             .onEach {it->
                 when(it) {
                     is Resource.Error->{
-                        Log.d("AJITHAL", "isMovieInWatchList: Error")
 
                         it.message?.let { it1 -> _watchListsState.value.copy(error = it1) }!!
 
                     }
                     is Resource.Loading->{
-                        Log.d("AJITHAL", "isMovieInWatchList: Loading")
 
                         _watchListsState.value = _watchListsState.value.copy(isLoading = true)
 
                     }
                     is Resource.Success->{
-                        Log.d("AJITHAL", "isMovieInWatchList: Success")
-                        Log.d("AJITHAL", "isMovieInWatchList: ${it.data}")
                         _watchListsState.value = _watchListsState.value.copy(isInWatchlist = it.data?:false)
-                        Log.d("AJITHAL", "isMovieInWatchList: ${watchlistState.value.isInWatchlist}")
 
                     }
                 }

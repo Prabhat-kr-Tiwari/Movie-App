@@ -40,7 +40,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
@@ -78,8 +77,13 @@ import com.prabhat.movieapp.data.model.categories.GenreResponseDto
 import com.prabhat.movieapp.data.model.categories.movieByCategories.MovieByCategoriesResponseDto
 import com.prabhat.movieapp.data.model.categories.tvByCategories.TvByCategoriesResponseDto
 import com.prabhat.movieapp.data.model.movie.popular.PopularSeriesDTO
+import com.prabhat.movieapp.data.model.movie.popular.details.LastEpisodeToAir
+import com.prabhat.movieapp.data.model.movie.popular.details.NextEpisodeToAir
+import com.prabhat.movieapp.data.model.movie.popular.details.PopularSeriesDetailResponseDTO
+import com.prabhat.movieapp.data.model.movie.popular.details.SpokenLanguage
 import com.prabhat.movieapp.data.model.movie.popular.videos.PopularSeriesVideoResponseDTO
 import com.prabhat.movieapp.data.model.movie.trending.TrendingOfWeekResponseDto
+import com.prabhat.movieapp.data.model.movie.trending.details.TvDetailResponseDTO
 import com.prabhat.movieapp.data.model.movie.upcoming.Dates
 import com.prabhat.movieapp.data.model.movie.upcoming.Result
 import com.prabhat.movieapp.data.model.movie.upcoming.UpComingMovieResponseDTO
@@ -87,6 +91,7 @@ import com.prabhat.movieapp.data.model.movie.upcoming.UpComingMovieVideoResponse
 import com.prabhat.movieapp.data.model.movie.upcoming.credits.Cast
 import com.prabhat.movieapp.data.model.movie.upcoming.credits.CreditsResponseDto
 import com.prabhat.movieapp.data.model.movie.upcoming.credits.Crew
+import com.prabhat.movieapp.data.model.movie.upcoming.details.UpComingMovieDetailResponseDTO
 import com.prabhat.movieapp.data.network.movie.MovieApiService
 import com.prabhat.movieapp.domain.model.categories.MovieByCategories
 import com.prabhat.movieapp.domain.model.tvByCategories.TvByCategories
@@ -99,9 +104,10 @@ import com.prabhat.movieapp.mappers.trending.TrendingOfWeekResponseDtoToTrending
 import com.prabhat.movieapp.navigation.HomeDestination
 import com.prabhat.movieapp.presentation.screen.home.FakePagingSource
 import com.prabhat.movieapp.presentation.screen.home.MockMovieRepository
+import com.prabhat.movieapp.presentation.screen.home.MovieCategory
 import com.prabhat.movieapp.presentation.screen.home.MovieScreenViewModel
+import com.prabhat.movieapp.presentation.screen.home.MovieTag
 import com.prabhat.movieapp.presentation.screen.home.movieDetail.MockWatchListRepository
-import com.prabhat.movieapp.presentation.screen.introScreen.HorizontalPagerContent
 import com.prabhat.movieapp.ui.theme.MovieAppTheme
 
 
@@ -111,35 +117,11 @@ fun MovieCategoriesScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
 ) {
-    val genrelist = movieScreenViewModel.genreListState.value
     val movieByCategoriesPager=movieScreenViewModel.moviesByCategories.collectAsLazyPagingItems()
 
-    val onTvSelected = remember { mutableStateOf(false) }
-    val onMovieByCategoriesSelected = remember { mutableStateOf(false) }
-
     //tv
-    val tvGenreList = movieScreenViewModel.tvGenreListState.value
     val tvByCategoriesPager = movieScreenViewModel.tvByCategories.collectAsLazyPagingItems()
-    LaunchedEffect(onTvSelected.value) {
-        if (onTvSelected.value){
-            val selectedTvByCategories = movieScreenViewModel.selectedTvByCategories.value
-            if (selectedTvByCategories!=null){
-                navHostController.navigate(HomeDestination.MovieLoadingScreen)
-                onTvSelected.value=false
-            }
-        }
-    }
-    LaunchedEffect(onMovieByCategoriesSelected.value) {
-        if (onMovieByCategoriesSelected.value){
-            val movieByCategories = movieScreenViewModel.moviesByCategories.value
-            if (movieByCategories!=null){
-                navHostController.navigate(HomeDestination.MovieLoadingScreen)
-                onMovieByCategoriesSelected.value=false
-            }else{
 
-            }
-        }
-    }
 
 
 
@@ -167,7 +149,6 @@ fun MovieCategoriesScreen(
                 selectedTabIndex = pagerState.currentPage
             }
         }
-        val moviesCategories = listOf("New","oldest","Top","order")
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -242,8 +223,8 @@ fun MovieCategoriesScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
 
-                                MovieByCategories(innerPadding = PaddingValues(0.dp), movieByCategories = movieByCategoriesPager, movieScreenViewModel = movieScreenViewModel){
-                                    onMovieByCategoriesSelected.value = true
+                                MovieByCategories(innerPadding = PaddingValues(0.dp), movieByCategories = movieByCategoriesPager){id->
+                                    navHostController.navigate(HomeDestination.MovieDetailScreen(movieTag = MovieTag(id =id ), movieCategory = MovieCategory.UPCOMING))
                                 }
                             }
                         }
@@ -260,7 +241,6 @@ fun MovieCategoriesScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
-                            Log.d("MovieCategoriesScreen", "Series Tab - tvOptions size: ${movieScreenViewModel.tvOptions.value.size}")
                             if (movieScreenViewModel.tvOptions.value.isNotEmpty()) {
                                 Log.d("MovieCategoriesScreen", "Series Tab - First tvOption: ${movieScreenViewModel.tvOptions.value.first().genreName}")
                             }
@@ -277,8 +257,9 @@ fun MovieCategoriesScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
 
-                                TvByCategories(innerPadding = PaddingValues(0.dp), tvByCategories = tvByCategoriesPager, movieScreenViewModel = movieScreenViewModel){
-                                    onTvSelected.value = true
+                                TvByCategories(innerPadding = PaddingValues(0.dp), tvByCategories = tvByCategoriesPager){id->
+                                    navHostController.navigate(HomeDestination.MovieDetailScreen(movieTag = MovieTag(id = id), movieCategory = MovieCategory.TRENDING_WEEK))
+
                                 }
                             }
                         }
@@ -350,7 +331,7 @@ fun SingleSelectionCard(selectionOption: SelectionOption, onOptionClicked: (Sele
                interactionSource = TODO()*/
         ) {
 //            Text(text = selectionOption.genreId.toString(),Modifier.padding(10.dp))
-            Text(text = selectionOption.genreName.toString(),Modifier.padding(10.dp))
+            Text(text = selectionOption.genreName,Modifier.padding(10.dp))
         }
     }
 }
@@ -421,6 +402,41 @@ class FakeMovieApiService : MovieApiService{
                     total_pages = 1,
                     total_results = 2
                 ))
+    }
+
+    override suspend fun getUpComingMovieDetailById(
+        movieId: Int,
+        apiKey: String,
+        language: String
+    ): UpComingMovieDetailResponseDTO {
+        return UpComingMovieDetailResponseDTO(
+            adult = false,
+            backdrop_path = "/mock_backdrop1.jpg",
+            belongs_to_collection = "null",
+            budget = 1000000,
+            genres = listOf(),
+            homepage = "https://www.example.com",
+            id = 101,
+            imdb_id = "tt1234567",
+            original_language = "en",
+            original_title = "Mock Movie 1",
+            overview = "This is the overview of Mock Movie 1. It's an exciting action-adventure movie.",
+            popularity = 1234.5,
+            poster_path = "/5qGIxdEO841C0tdY8vOdLoRVrr0.jpg",
+            production_companies = listOf(),
+            production_countries = listOf(),
+            release_date = "2025-01-15",
+            revenue = 2000000,
+            runtime = 120,
+            spoken_languages = listOf(),
+            status = "Released",
+            tagline = "This is a tagline for Mock Movie 1.",
+            title = "Mock Movie 1",
+            video = false,
+            vote_average = 7.8,
+            vote_count = 256,
+            origin_country = emptyList(),
+        )
     }
 
     override suspend fun getMovieCredits(
@@ -503,6 +519,81 @@ class FakeMovieApiService : MovieApiService{
         )
     }
 
+    override suspend fun getPopularSeriesDetailById(
+        seriesId: Int,
+        apiKey: String,
+        language: String
+    ): PopularSeriesDetailResponseDTO {
+        return PopularSeriesDetailResponseDTO(
+            adult = false,
+            backdrop_path = "/path_to_backdrop.jpg",
+            created_by = emptyList(),
+            episode_run_time = listOf(45, 50),
+            first_air_date = "2020-01-01",
+            genres = emptyList(),
+            homepage = "https://example.com",
+            id = 12345,
+            in_production = true,
+            languages = listOf("en"),
+            last_air_date = "2023-12-01",
+            last_episode_to_air = LastEpisodeToAir(
+                id = 101,
+                name = "Final Episode",
+                overview = "The story concludes.",
+                vote_average = 8.8,
+                vote_count = 1200,
+                air_date = "2023-12-01",
+                episode_number = 10,
+                production_code = "S01E10",
+                runtime = 50,
+                season_number = 1,
+                show_id = 12345,
+                still_path = "/episode_still.jpg",
+                episode_type =" TODO()"
+            ),
+            name = "Sample Series",
+            networks =emptyList(),
+            next_episode_to_air = NextEpisodeToAir(
+                air_date =" TODO()",
+                episode_number = 1,
+                episode_type = "",
+                id = 1,
+                name = "",
+                overview = "",
+                production_code = "TODO()",
+                runtime = "TODO()",
+                season_number = 1,
+                show_id = 1,
+                still_path ="",
+                vote_average = 12,
+                vote_count = 12
+            ),
+            number_of_episodes = 10,
+            number_of_seasons = 1,
+            origin_country = listOf("US"),
+            original_language = "en",
+            original_name = "Sample Series Original",
+            overview = "This is a sample overview of the series used for testing purposes.",
+            popularity = 1234.56,
+            poster_path = "/poster.jpg",
+            production_companies = emptyList(),
+            production_countries = emptyList(),
+            seasons = emptyList(),
+            spoken_languages = listOf(
+                SpokenLanguage(
+                    english_name = "English",
+                    iso_639_1 = "en",
+                    name = "English"
+                )
+            ),
+            status = "Ended",
+            tagline = "Every story has an end.",
+            type = "Scripted",
+            vote_average = 8.7,
+            vote_count = 2500
+        )
+    }
+
     override suspend fun getSeriesCredits(
         seriesId: Int,
         apiKey: String,
@@ -530,7 +621,7 @@ class FakeMovieApiService : MovieApiService{
 
             cast =
             listOf(
-                com.prabhat.movieapp.data.model.movie.upcoming.credits.Cast(
+                Cast(
                     adult = false,
                     gender = 2,
                     id = 2203,
@@ -605,6 +696,75 @@ class FakeMovieApiService : MovieApiService{
             , total_pages = 3, total_results = 4)
     }
 
+    override suspend fun getTvDetailById(
+        seriesId: Int,
+        apiKey: String,
+        language: String
+    ): TvDetailResponseDTO {
+        return TvDetailResponseDTO(
+            adult = false,
+            backdrop_path = "/path_to_backdrop.jpg",
+            created_by = emptyList(),
+            episode_run_time = listOf(45, 50),
+            first_air_date = "2020-01-01",
+            genres = emptyList(),
+            homepage = "https://example.com",
+            id = 12345,
+            in_production = true,
+            languages = listOf("en"),
+            last_air_date = "2023-12-01",
+            last_episode_to_air = com.prabhat.movieapp.data.model.movie.trending.details.LastEpisodeToAir(
+                id = 101,
+                name = "Final Episode",
+                overview = "The story concludes.",
+                vote_average = 8.8,
+                vote_count = 1200,
+                air_date = "2023-12-01",
+                episode_number = 10,
+                production_code = "S01E10",
+                runtime = 50,
+                season_number = 1,
+                show_id = 12345
+                , still_path = "/episode_still.jpg"
+                , episode_type =" TODO()"
+            ),
+            name = "Sample Series",
+            networks =emptyList(),
+            next_episode_to_air = com.prabhat.movieapp.data.model.movie.trending.details.NextEpisodeToAir(
+                air_date =" TODO()",
+                episode_number = 1,
+                episode_type = "",
+                id = 1,
+                name = "",
+                overview = "",
+                production_code = "TODO()",
+                runtime = "TODO()",
+                season_number = 1,
+                show_id = 1,
+                still_path ="",
+                vote_average = 12,
+                vote_count = 12
+            ),
+            number_of_episodes = 10,
+            number_of_seasons = 1,
+            origin_country = listOf("US"),
+            original_language = "en",
+            original_name = "Sample Series Original",
+            overview = "This is a sample overview of the series used for testing purposes.",
+            popularity = 1234.56,
+            poster_path = "/poster.jpg",
+            production_companies = emptyList(),
+            production_countries = emptyList(),
+            seasons = emptyList(),
+            spoken_languages = emptyList(),
+            status = "Ended",
+            tagline = "Every story has an end.",
+            type = "Scripted",
+            vote_average = 8.7,
+            vote_count = 2500
+        )
+    }
+
     override suspend fun getGenreList(apiKey: String): GenreResponseDto {
         return GenreResponseDto(genres = listOf())
     }
@@ -642,16 +802,15 @@ fun LazyListScope.MovieByCategories(
     innerPadding: PaddingValues,
     movieByCategories:
     LazyPagingItems<MovieByCategories>,
-    movieScreenViewModel: MovieScreenViewModel,
-    onClick:()->Unit
+    onClick:(id:Int)->Unit
 
 ) {
 
 
-    items(1) { index ->
+    items(1) { _ ->
         ThreeItem(
 
-            content = movieByCategories, innerPadding = innerPadding, movieScreenViewModel = movieScreenViewModel,onClick=onClick
+            content = movieByCategories, innerPadding = innerPadding,onClick=onClick
         )
     }
 
@@ -663,8 +822,8 @@ fun LazyListScope.MovieByCategories(
 fun ThreeItem(
     modifier: Modifier = Modifier,
     content: LazyPagingItems<MovieByCategories>,
-    innerPadding: PaddingValues, movieScreenViewModel: MovieScreenViewModel,
-    onClick:()->Unit
+    innerPadding: PaddingValues,
+    onClick:(id:Int)->Unit
 ) {
 
     Card(
@@ -706,10 +865,10 @@ fun ThreeItem(
                                                     .height(200.dp)
                                                     .clickable {
 
-                                                        movieScreenViewModel.onMovieByCategoriesSelected(
+                                                        /*movieScreenViewModel.onMovieByCategoriesSelected(
                                                             item
-                                                        )
-                                                        onClick.invoke()
+                                                        )*/
+                                                        onClick.invoke(item.id)
 
                                                     },
                                             )
@@ -761,16 +920,15 @@ fun ThreeItem(
 fun LazyListScope.TvByCategories(
     innerPadding: PaddingValues,
     tvByCategories: LazyPagingItems<TvByCategories>,
-    movieScreenViewModel: MovieScreenViewModel,
-    onClick:()->Unit
+    onClick:(id:Int)->Unit
 
 ) {
 
 
-    items(1) { index ->
+    items(1) { _ ->
         ThreeItemForTv(
 
-            content = tvByCategories, innerPadding = innerPadding, movieScreenViewModel = movieScreenViewModel,onClick=onClick
+            content = tvByCategories, innerPadding = innerPadding,onClick=onClick
         )
     }
 
@@ -782,8 +940,8 @@ fun LazyListScope.TvByCategories(
 fun ThreeItemForTv(
     modifier: Modifier = Modifier,
     content: LazyPagingItems<TvByCategories>,
-    innerPadding: PaddingValues, movieScreenViewModel: MovieScreenViewModel,
-    onClick:()->Unit
+    innerPadding: PaddingValues,
+    onClick:(id:Int)->Unit
 ) {
 
     Card(
@@ -825,8 +983,7 @@ fun ThreeItemForTv(
                                         .height(200.dp)
                                         .clickable {
 
-                                            movieScreenViewModel.onTvByCategoriesSelected(item)
-                                            onClick.invoke()
+                                            onClick.invoke(item.id)
 
                                         },
                                 )

@@ -1,8 +1,10 @@
 package com.prabhat.movieapp.navigation
 
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,7 +18,9 @@ import androidx.navigation.toRoute
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.prabhat.movieapp.presentation.screen.categories.MovieCategoriesScreen
 import com.prabhat.movieapp.presentation.screen.downloads.MovieDownloadScreen
+import com.prabhat.movieapp.presentation.screen.home.MovieCategory
 import com.prabhat.movieapp.presentation.screen.home.MovieHomeScreen
+import com.prabhat.movieapp.presentation.screen.home.MovieTag
 import com.prabhat.movieapp.presentation.screen.home.movieDetail.LoadingScreen
 import com.prabhat.movieapp.presentation.screen.home.movieDetail.MovieDetailScreen
 import com.prabhat.movieapp.presentation.screen.introScreen.IntroScreen
@@ -39,10 +43,36 @@ import com.prabhat.movieapp.presentation.screen.profileScreen.enterUserNameScree
 import com.prabhat.movieapp.presentation.screen.profileScreen.profileCreatedSuccessfullyScreen.ProfileCompleteScreen
 import com.prabhat.movieapp.presentation.screen.signUpScreen.SignUpScreen
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.reflect.typeOf
 
-class CustomNavType<T : Parcelable>(
+
+
+
+object CustomNavType {
+
+    val MovieTagType = object : NavType<MovieTag>(
+        isNullableAllowed = false
+    ) {
+        override fun get(bundle: Bundle, key: String): MovieTag? {
+            return Json.decodeFromString(bundle.getString(key) ?: return null)
+        }
+
+        override fun parseValue(value: String): MovieTag {
+            return Json.decodeFromString(Uri.decode(value))
+        }
+
+        override fun serializeAsValue(value: MovieTag): String {
+            return Uri.encode(Json.encodeToString(value))
+        }
+
+        override fun put(bundle: Bundle, key: String, value: MovieTag) {
+            bundle.putString(key, Json.encodeToString(value))
+        }
+    }
+}
+/*class CustomNavType<T : Parcelable>(
     private val clazz: Class<T>,
     private val serializer:KSerializer<T>
 ) : NavType<T?>(isNullableAllowed = true){
@@ -73,7 +103,7 @@ class CustomNavType<T : Parcelable>(
     }
 
 
-}
+}*/
 
 @Composable
 fun PerformNavigation(
@@ -261,7 +291,7 @@ fun PerformNavigation(
             settingScreenRoot(innerPaddingValues = innerPadding, onNavigateUp =  { navHostController.navigateUp() })
         }
 
-        navigation<BottomNavigationDestination.MovieHomeScreen>(startDestination = HomeDestination.MovieLoadingScreen) {
+        /*navigation<HomeDestination.MovieDetailScreen>(startDestination = HomeDestination.MovieLoadingScreen) {
             composable<HomeDestination.MovieLoadingScreen> {
 
                 LoadingScreen(
@@ -269,17 +299,29 @@ fun PerformNavigation(
                 )
             }
 
-            composable<HomeDestination.MovieDetailScreen>() {
 
-                MovieDetailScreen(
-                    systemUiController = systemUiController,
-                    statusBarColor = statusBarColor,
-                    innerPadding = innerPadding,
-                            navHostController = navHostController
-                )
+        }*/
+        composable<HomeDestination.MovieDetailScreen>(
+            typeMap = mapOf(
+                typeOf<MovieTag>() to CustomNavType.MovieTagType
+                ,
+                typeOf<MovieCategory>() to NavType.EnumType(MovieCategory::class.java)
+            )
+        ) {
+            val movieTag = it.toRoute<HomeDestination.MovieDetailScreen>().movieTag
+            val movieCategory = it.toRoute<HomeDestination.MovieDetailScreen>().movieCategory
+            Log.d("PRABHU", "MovieDetailScreen: ${movieTag.id}  ${movieCategory.toString()}")
+
+            MovieDetailScreen(
+                movieId = movieTag.id,
+                movieCategory =movieCategory,
+                systemUiController = systemUiController,
+                statusBarColor = statusBarColor,
+                innerPadding = innerPadding,
+                navHostController = navHostController
+            )
 
 
-            }
         }
 
 
