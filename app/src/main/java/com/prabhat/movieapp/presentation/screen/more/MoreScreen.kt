@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,15 +49,32 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prabhat.movieapp.R
 import com.prabhat.movieapp.component.SignOutAlertDialog
+import com.prabhat.movieapp.presentation.components.CustomContainedLoadingIndicator
 import com.prabhat.movieapp.presentation.screen.home.movieDetail.verticalPadding
 import com.prabhat.movieapp.ui.theme.MovieAppTheme
 
 
 //@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MoreScreen(innerPaddingValues: PaddingValues,modifier: Modifier = Modifier,onOpenAccount:()->Unit,onOpenSettings:()->Unit) {
+fun MoreScreen(innerPaddingValues: PaddingValues,modifier: Modifier = Modifier,onOpenAccount:()->Unit,onOpenSettings:()->Unit,moreScreenViewModel: MoreScreenViewModel= hiltViewModel()) {
+    val moreScreenUiState = moreScreenViewModel.moreScreenUiState.collectAsStateWithLifecycle()
+
+
+    val imageResources = listOf(
+        painterResource(id = R.drawable.ellipse13),
+        painterResource(id = R.drawable.ellipse14),
+        painterResource(id = R.drawable.ellipse15),
+        painterResource(id = R.drawable.ellipse16),
+        painterResource(id = R.drawable.ellipse17),
+        painterResource(id = R.drawable.ellipse18),
+        painterResource(id = R.drawable.ellipse19),
+        painterResource(id = R.drawable.ellipse20)
+    )
+
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
             .background(MaterialTheme.colorScheme.surface)
@@ -68,33 +86,69 @@ fun MoreScreen(innerPaddingValues: PaddingValues,modifier: Modifier = Modifier,o
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Box(
-            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                .size(160.dp)
-                .clip(RectangleShape),
-            contentAlignment = Alignment.Center
 
-        ) {
-            MatrixGrid(size = 26, borderColor = Color.Red, modifier = Modifier.size(200.dp))
+        when(val state = moreScreenUiState.value){
+            is MoreScreenUiState.UserPreference->{
+                val avatarIndex = state.avatarId.toInt()
+                val painterResource = imageResources[avatarIndex]
 
-            Image(
-                painter = painterResource(id = R.drawable.ellipse13),
-                modifier = Modifier
-                    .size(140.dp)
-                    .border(
-                        border = (BorderStroke(
-                            1.dp, color = Color.Red
-                        )), shape = CircleShape
-                    ),
-                contentDescription = "Description of your image" // Important for accessibility
-            )
+
+                Box(
+                    modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                        .size(160.dp)
+                        .clip(RectangleShape),
+                    contentAlignment = Alignment.Center
+
+                ) {
+                    MatrixGrid(size = 26, borderColor = Color.Red, modifier = Modifier.size(200.dp))
+
+                    Image(
+                        painter = painterResource,
+                        modifier = Modifier
+                            .size(140.dp)
+                            .border(
+                                border = (BorderStroke(
+                                    1.dp, color = Color.Red
+                                )), shape = CircleShape
+                            ),
+                        contentDescription = "Description of your image" // Important for accessibility
+                    )
+                }
+                Text(
+                    text = state.name,
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onBackground, fontWeight = Bold,
+                    modifier = Modifier.padding(16.dp)
+                )
+                //
+
+
+
+            }
+
+            MoreScreenUiState.LoadFailed -> {
+                //show failed load
+                Text(
+                    text = "Failed to load user",
+                    modifier = Modifier.padding(40.dp),
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+            MoreScreenUiState.Loading -> {
+
+                CustomContainedLoadingIndicator()
+
+            }
+            MoreScreenUiState.NotShown -> {
+
+                //there is no state
+                Text(
+                    text = "No user data",
+                    modifier = Modifier.padding(40.dp)
+                )
+            }
         }
-        Text(
-            text = "UIUXDIVYANSHU",
-            fontSize = 20.sp,
-            color = MaterialTheme.colorScheme.onBackground, fontWeight = Bold,
-            modifier = Modifier.padding(16.dp)
-        )
+
 
 
         val moreItemList = listOf<String>(

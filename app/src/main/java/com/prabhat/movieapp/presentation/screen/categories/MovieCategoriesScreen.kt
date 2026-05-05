@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 
@@ -102,6 +104,7 @@ import com.prabhat.movieapp.domain.use_case.watchList.RemoveMovieFromWatchlistUs
 import com.prabhat.movieapp.mappers.popularSeries.PopularSeriesDTOToPopularSeriesMapper
 import com.prabhat.movieapp.mappers.trending.TrendingOfWeekResponseDtoToTrendingOfWeekMapper
 import com.prabhat.movieapp.navigation.HomeDestination
+import com.prabhat.movieapp.presentation.components.CustomContainedLoadingIndicator
 import com.prabhat.movieapp.presentation.screen.home.FakePagingSource
 import com.prabhat.movieapp.presentation.screen.home.MockMovieRepository
 import com.prabhat.movieapp.presentation.screen.home.MovieCategory
@@ -337,8 +340,9 @@ fun SingleSelectionCard(selectionOption: SelectionOption, onOptionClicked: (Sele
 }
 
 
+
 @Composable
-@ThemeAnnotation
+//@ThemeAnnotation
 fun PreviewMovieCategoriesScreen(modifier: Modifier = Modifier) {
 
     val mockMovieApiService: MovieApiService = FakeMovieApiService()
@@ -886,9 +890,8 @@ fun ThreeItem(
                     .background(MaterialTheme.colorScheme.surface)
                     .align(Alignment.CenterHorizontally)){
 
-                    CircularProgressIndicator(modifier
-                        .align(Alignment.Center)
-                        .padding(16.dp))
+
+                    CustomContainedLoadingIndicator()
                 }
             }
            else if (content.loadState.refresh is LoadState.Loading){
@@ -1001,9 +1004,16 @@ fun ThreeItemForTv(
                 .background(MaterialTheme.colorScheme.surface)
                 .align(Alignment.CenterHorizontally)){
 
-                CircularProgressIndicator(modifier
+                /*CircularProgressIndicator(modifier
                     .align(Alignment.Center)
-                    .padding(16.dp))
+                    .padding(16.dp))*/
+               /* ContainedLoadingIndicator(
+                    containerColor = Color.Red,
+                    modifier =  modifier
+                        .align(Alignment.Center)
+                        .padding(16.dp)
+                )*/
+                CustomContainedLoadingIndicator()
             }
         }
         else if (content.loadState.refresh is LoadState.Loading){
