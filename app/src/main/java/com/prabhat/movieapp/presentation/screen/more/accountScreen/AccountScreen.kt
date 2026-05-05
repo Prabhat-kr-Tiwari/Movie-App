@@ -1,5 +1,6 @@
 package com.prabhat.movieapp.presentation.screen.more.accountScreen
 
+import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -8,34 +9,42 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.displayCutoutPadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,56 +54,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prabhat.movieapp.R
+import com.prabhat.movieapp.presentation.components.CenteredAlignTopAppBar
+import com.prabhat.movieapp.presentation.components.CustomContainedLoadingIndicator
 import com.prabhat.movieapp.ui.theme.MovieAppTheme
 
 @Composable
-fun AccountScreen(innerPaddingValues: PaddingValues,modifier: Modifier = Modifier,onNavigateUp:()->Unit) {
+fun AccountScreen(
+    innerPaddingValues: PaddingValues,
+    modifier: Modifier = Modifier,
+    onNavigateUp:()->Unit,
+    accountScreenViewModel: AccountScreenViewModel= hiltViewModel()
+    ) {
+    val imageResources = listOf(
+        painterResource(id = R.drawable.ellipse13),
+        painterResource(id = R.drawable.ellipse14),
+        painterResource(id = R.drawable.ellipse15),
+        painterResource(id = R.drawable.ellipse16),
+        painterResource(id = R.drawable.ellipse17),
+        painterResource(id = R.drawable.ellipse18),
+        painterResource(id = R.drawable.ellipse19),
+        painterResource(id = R.drawable.ellipse20)
+    )
+    val accountScreenUiState = accountScreenViewModel.accountScreenUiState.collectAsStateWithLifecycle()
 
-    Scaffold(modifier = modifier
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+    Scaffold(modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
         .padding(innerPaddingValues)
         .background(MaterialTheme.colorScheme.surface), topBar = {
-        TopAppBar(
-            modifier = Modifier,
-            contentColor = MaterialTheme.colorScheme.surface,
-            backgroundColor = MaterialTheme.colorScheme.surface
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxSize()
 
-            ) {
-                // Back Icon - aligned to the start
-                IconButton(
-                    onClick = {onNavigateUp()},
-                    modifier = Modifier.align(Alignment.CenterStart),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.onBackground,
-                        contentColor = MaterialTheme.colorScheme.surface,
-                        disabledContentColor = MaterialTheme.colorScheme.onBackground,
-                        disabledContainerColor = MaterialTheme.colorScheme.surface
-                    )
-                ) {
-                    Icon(
-                        modifier = Modifier,
-                        painter = painterResource(R.drawable.baseline_arrow_back_24),
-                        contentDescription = "back"
-                    )
-                }
-
-                // Centered Text
-                Text(
-                    text = "Account",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Center
-                )
-            }
-
-
+        CenteredAlignTopAppBar(title = "Account", topAppBarScrollBehavior = scrollBehavior) {
+            onNavigateUp()
         }
 
 
@@ -105,6 +97,7 @@ fun AccountScreen(innerPaddingValues: PaddingValues,modifier: Modifier = Modifie
                 .verticalScroll(rememberScrollState())
                 .fillMaxSize()
                 .padding(innerPadding),
+
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -116,14 +109,39 @@ fun AccountScreen(innerPaddingValues: PaddingValues,modifier: Modifier = Modifie
                 modifier = Modifier.padding(top = 20.dp, bottom = 10.dp)
             )
 
-            GlowingCircleWithImage()
-            Text(
-                text = "UIUXDIVYANSHU",
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp, textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 20.dp, bottom = 10.dp)
-            )
+            when(val state = accountScreenUiState.value){
+                AccountScreenUiState.LoadFailed -> {
+                    Text(
+                        text = "Failed to load user",
+                        modifier = Modifier.padding(40.dp),
+                        color = MaterialTheme.colorScheme.error
+                    )
+
+                }
+                AccountScreenUiState.Loading -> {
+                    CustomContainedLoadingIndicator()
+
+                }
+                AccountScreenUiState.NotShown -> {
+                    Text(
+                        text = "No user data",
+                        modifier = Modifier.padding(40.dp)
+                    )
+                }
+                is AccountScreenUiState.UserPreference -> {
+                    val avatarIndex = state.avatarId.toInt()
+                    val painterResource = imageResources[avatarIndex]
+                    GlowingCircleWithImage(painterResource)
+                    Text(
+                        text = state.name,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp, textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 20.dp, bottom = 10.dp)
+                    )
+                }
+            }
+
             LazyRow {
                 item {
                     AccountItem(
@@ -200,7 +218,7 @@ fun AccountItem(accountName: String, drawable: Drawable, modifier: Modifier = Mo
 }
 
 @Composable
-fun GlowingCircleWithImage() {
+fun GlowingCircleWithImage(painterResource: Painter) {
     Box(
         modifier = Modifier,
         contentAlignment = Alignment.Center
@@ -225,7 +243,7 @@ fun GlowingCircleWithImage() {
 
         // Load an image in the center
         Image(
-            painter = painterResource(id = R.drawable.ellipse20), // Replace with your drawable or rememberAsyncImagePainter
+            painter = painterResource, // Replace with your drawable or rememberAsyncImagePainter
             contentDescription = "Spiderman",
             modifier = Modifier.size(160.dp)
         )
@@ -233,9 +251,69 @@ fun GlowingCircleWithImage() {
 }
 
 
-@ThemeAnnotation
+@Preview(showSystemUi = true)
 @Composable
-fun previewAccountScreen(modifier: Modifier = Modifier) {
+fun PreviewTopBar(){
+    MovieAppTheme {
+        val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+        AccountTopBar(scrollBehavior) {
+
+        }
+    }
+}
+@Composable
+fun AccountTopBar(
+    topAppBarScrollBehavior: TopAppBarScrollBehavior,
+    onNavigateUp: () -> Unit
+) {
+
+    CenterAlignedTopAppBar(
+       modifier = Modifier
+        ,
+        scrollBehavior=topAppBarScrollBehavior,
+
+        title = {
+            Box(modifier=Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
+                Text(
+                    modifier = Modifier.padding(bottom = 10.dp),
+                    text = "Account",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onBackground,
+
+                    )
+            }
+        },
+        navigationIcon = {
+                IconButton(
+                    modifier = Modifier.size(40.dp)
+                       ,
+                    onClick = { onNavigateUp() },
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.onBackground,
+                        contentColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_arrow_back_24),
+                        contentDescription = "back"
+                    )
+                }
+
+
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrolledContainerColor = Color.Unspecified,
+            navigationIconContentColor = Color.Unspecified,
+            titleContentColor = Color.Unspecified,
+            actionIconContentColor = Color.Unspecified
+        )
+    )
+}
+//@ThemeAnnotation
+@Composable
+fun PreviewAccountScreen() {
 
     MovieAppTheme {
         AccountScreen(onNavigateUp={}, innerPaddingValues = PaddingValues())
